@@ -31,7 +31,7 @@ button:active{transform:scale(.96)}
 .lb,.row label{display:block;font-size:12px;font-weight:600;color:var(--mut)}.lb{max-width:200px;margin-bottom:10px}.row label{display:flex;flex-direction:column;gap:4px}
 .row{display:grid;grid-template-columns:1fr 1fr .9fr;gap:10px;align-items:end}
 .diff{display:flex;align-items:center;justify-content:center;height:50px;border-radius:999px;font-weight:800;font-size:20px;background:var(--soft);color:var(--mut);transition:background-color .2s,color .2s}
-.diff.neg{background:#fdeaea;color:var(--neg)}.diff.pos{background:#e7f0fd;color:var(--pos)}
+.diff.ok{background:#e4f5e1;color:var(--g2)}.diff.neg{background:#fdeaea;color:var(--neg)}.diff.pos{background:#e7f0fd;color:var(--pos)}
 .neg{color:var(--neg)}.pos{color:var(--pos)}
 .act{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}.act button{padding:7px 14px;font-size:14px}.act button:nth-of-type(2){border-color:#e7b4b4;color:var(--neg)}
 .act label{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px;font-weight:600;color:var(--mut)}
@@ -75,8 +75,8 @@ nav .on{color:var(--g2)}nav .on .ic{background:var(--mint)}
 #pr td{border:.75pt solid #000;height:15pt;padding:0 2px;overflow:hidden;white-space:nowrap;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #pr .t{border:2pt solid #000}#pr .h{background:#B4C6E7}#pr .d{font-size:8pt;text-align:left}#pr .n{border:0}#pr thead{display:table-header-group}}
 </style></head><body>
-<div id="auth" hidden></div><div id="app" hidden><input id="imf" type="file" accept=".xlsx,.xls,.ods,.csv" hidden onchange="imp(this.files[0]);this.value=''"><header><div class="strip">INVENTARIO · FARMACIA SAAS</div><div class="hd"><button id="av" class="avb" onclick="go('per')" aria-label="Mi perfil"></button><div style="flex:1;min-width:0"><div class="sub" id="sb">Farmacia SAAS</div><h1 id="hi">Inventario</h1></div><img id="lg" alt="Farmacia SAAS"></div><div id="ctl" style="margin-top:8px"></div></header><main><div id="flt"></div><div id="main"></div></main>
-<nav><button id="n1" onclick="go('inv')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5h6M9 13l2 2 4-4"/></svg></span>Inventario</button><button id="n2" onclick="go('ven')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span>Vencen</button><button id="n3" onclick="go('res')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>Resumen</button><button id="n4" onclick="go('mas')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg></span>Más</button></nav><div id="sh" hidden><div class="sb"><h3>Agregar producto</h3><label>Código (SKU)<input id="ac" inputmode="numeric" autocomplete="off" oninput="acIn()"></label><div id="as" class="top"></div><label>Descripción<input id="ad" autocomplete="off"></label><div class="bar"><button onclick="shut()">Cancelar</button><button class="pri" onclick="saveNew()">Agregar</button></div></div></div></div>
+<div id="auth" hidden></div><div id="app" hidden><input id="imf" type="file" accept=".xlsx,.xls,.ods,.csv" hidden onchange="imp(this.files[0]);this.value=''"><input id="pf" type="file" accept=".xlsx,.xls,.ods" hidden onchange="impPol(this.files[0]);this.value=''"><header><div class="strip">INVENTARIO · FARMACIA SAAS</div><div class="hd"><button id="av" class="avb" onclick="go('per')" aria-label="Mi perfil"></button><div style="flex:1;min-width:0"><div class="sub" id="sb">Farmacia SAAS</div><h1 id="hi">Inventario</h1></div><img id="lg" alt="Farmacia SAAS"></div><div id="ctl" style="margin-top:8px"></div></header><main><div id="flt"></div><div id="main"></div></main>
+<nav><button id="n1" onclick="go('inv')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5h6M9 13l2 2 4-4"/></svg></span>Inventario</button><button id="n2" onclick="go('ven')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span>Vencen</button><button id="n5" onclick="go('pol')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7H5v-4M5 7a8 8 0 111 9"/><path d="M12 8v4l3 2"/></svg></span>Devol.</button><button id="n3" onclick="go('res')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>Resumen</button><button id="n4" onclick="go('mas')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg></span>Más</button></nav><div id="sh" hidden><div class="sb"><h3>Agregar producto</h3><label>Código (SKU)<input id="ac" inputmode="numeric" autocomplete="off" oninput="acIn()"></label><div id="as" class="top"></div><label>Descripción<input id="ad" autocomplete="off"></label><div class="bar"><button onclick="shut()">Cancelar</button><button class="pri" onclick="saveNew()">Agregar</button></div></div></div></div>
 <div id="dlg" hidden><div class="db"><div id="dic" class="di"></div><h3 id="dt"></h3><p id="dm"></p><input id="dp" type="text" hidden><div class="bar" id="dbtn"></div></div></div><div id="pr"></div>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -97,16 +97,16 @@ function tag(it){const d=md(it);let t='';
  if(d!==null){if(d<0)t='<span class="tag n">Vencido</span>';else if(d==0)t='<span class="tag n">Vence este mes</span>';else if(d<=7)t=`<span class="tag w">Vence en ${d} ${d>1?'meses':'mes'}</span>`}
  return(it.st?'<span class="tag w">* </span>':'')+t}
 const df=it=>{const[s,f]=it.w[ui.wk];return s===null||f===null?null:f-s};
-const dtxt=v=>v===null?'–':v>0?'+'+v:''+v;
-const dcls=v=>v===null?'':v<0?'neg':v>0?'pos':'';
+const dtxt=v=>v===null?'–':v===0?'✔':v>0?'+'+v:''+v;
+const dcls=v=>v===null?'':v<0?'neg':v>0?'pos':'ok';
 const cur=i=>S.secs[ui.sec].it[i];
 
 function ctl(){$('#ctl').innerHTML=`<div class="bar"><select onchange="ui.sec=+this.value;list()">${S.secs.map((s,i)=>[i,esc(nm(s))]).map(([k,x])=>`<option value="${k}" ${k==ui.sec?'selected':''}>${x}</option>`).join('')}</select><select onchange="ui.wk=+this.value;list()">${opt([0,1,2,3].map(i=>[i,'Semana '+(i+1)]),ui.wk)}</select></div>`;
  $('#flt').innerHTML=`<div id="prg" class="top" style="margin-bottom:8px"></div><input id="q" type="search" placeholder="Buscar por código o nombre" oninput="list()"><div class="bar" style="margin:8px 0"><select onchange="ui.f=this.value;list()">${opt([['t','Todos'],['p','Pendientes'],['d','Con diferencia']],ui.f)}</select><select onchange="ui.o=this.value;list()">${opt([['o','Original'],['c','Código'],['n','Nombre'],['v','Vence']],ui.o)}</select></div>`}
-const card=(it,i)=>{const[s,f]=it.w[ui.wk],v=df(it),d=md(it);return `<div class="card ${d===null?'':d<=0?'cx':d<=7?'cw':''}"><div class="top"><span>${esc(it.c)}</span><span id="t${i}">${tag(it)}</span></div><div class="desc">${esc(it.d)}</div>
+const card=(it,i)=>{const[s,f]=it.w[ui.wk],v=df(it),d=md(it);return `<div class="card ${d===null?'':d<=0?'cx':d<=7?'cw':''}"><div class="top"><span>${esc(it.c)}</span><span id="t${i}">${tag(it)}</span></div><div class="desc">${esc(it.d)}</div>${labLine(it)}
 <label class="lb">Vence<input type="month" value="${it.fv}" onchange="setFv(${i},this.value)"></label>
 <div class="row"><label>Sistema<input type="number" inputmode="numeric" value="${s??''}" onchange="setV(${i},0,this.value)"></label><label>Físico<input type="number" inputmode="numeric" value="${f??''}" onchange="setV(${i},1,this.value)"></label><div id="d${i}" class="diff ${dcls(v)}">${dtxt(v)}</div></div>
-<div class="act"><button onclick="edit(${i})">Editar</button><button onclick="del(${i})">Eliminar</button><label><input type="checkbox" ${it.st?'checked':''} onchange="setSt(${i},this.checked)"> Próximo a vencer (*)</label></div></div>`};
+<div class="act"><button onclick="edit(${i})">Editar</button><button onclick="del(${i})">Eliminar</button>${POL?`<button style="border-color:var(--line);color:var(--navy)" onclick="asignLab(${ui.sec},${i})">Laboratorio</button>`:''}<label><input type="checkbox" ${it.st?'checked':''} onchange="setSt(${i},this.checked)"> Próximo a vencer (*)</label></div></div>`};
 function prog(){const its=S.secs[ui.sec].it;$('#prg').textContent=`Contados ${its.filter(ok).length} de ${its.length}`}
 function list(){const q=($('#q')?.value||'').toLowerCase(),its=S.secs[ui.sec].it;
  prog();
@@ -143,6 +143,7 @@ function mas(){$('#flt').innerHTML='';$('#ctl').innerHTML='';
  const c=(t,p,b)=>`<div class="card"><div class="desc">${t}</div><p class="top">${p}</p>${b}</div>`;
  $('#main').innerHTML=c('Importar inventario','Carga tu inventario desde un Excel, ODS o CSV con las columnas CODIGO, DESCRIPCION y F.V. Reemplaza el inventario actual.','<button class="pri" onclick="$(\'#imf\').click()">Importar desde Excel</button>')
  +c('Conexión con la página de la farmacia',CFG.proxy?'Conectada: al agregar un producto, la descripción se completa sola con el código (SKU).':'Aún no está conectada. Crea tu buscador gratis con la guía y pega su dirección aquí.','<button class="pri" onclick="cfgProxy()">'+(CFG.proxy?'Cambiar dirección':'Configurar')+'</button> '+(CFG.proxy?'<button onclick="testProxy()">Probar conexión</button>':''))
+ +c('Política de devolución',POL?'Archivo cargado: '+esc(POL.name)+' · '+POL.g.length+' laboratorios.':'Aún no has cargado el archivo de política.','<button class="pri" onclick="$(\'#pf\').click()">'+(POL?'Cambiar archivo':'Cargar archivo')+'</button> <button onclick="go(\'pol\')">Ver devoluciones</button>')
  +c('Exportar','Excel con tu formato exacto (horizontal, columnas y encabezado azul) o PDF listo para imprimir.','<button class="pri" onclick="exportXlsx()">Exportar Excel</button> <button class="pri" onclick="exportPdf()">Exportar PDF</button>')
  +c('Copia de seguridad','Guarda tu inventario en un archivo para no perderlo si borras los datos del navegador.','<button class="pri" onclick="backup()">Guardar copia</button> <button onclick="$(\'#rf\').click()">Restaurar copia</button><input id="rf" type="file" accept=".json,application/json" hidden onchange="restore(this.files[0])">')
  +c('Secciones','Agrega una sección nueva o elimina la que estás viendo.','<button onclick="newSec()">Nueva sección</button> '+(S.secs.length?'<button onclick="delSec()">Eliminar sección actual</button>':''))
@@ -190,9 +191,9 @@ async function imp(f){if(!f)return;if(!window.XLSX)return uiAlert('Para importar
   wb.SheetNames.forEach(sn=>{const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,defval:null});
    const hr=rows.findIndex((r,i)=>i<15&&r.some(c=>z(c)==='CODIGO'));if(hr<0)return;
    const H=rows[hr].map(z),ci=H.indexOf('CODIGO'),di=H.findIndex(x=>x.startsWith('DESCRIP')),fi=H.findIndex(x=>x=='F.V'||x=='FV'||x.startsWith('VENC')||x.startsWith('F.VENC'));
-   if(di<0)return;
+   if(di<0)return;const li=H.findIndex(x=>x.startsWith('LABORAT')||x==='LAB'||x==='PROVEEDOR');
    const t=rows.slice(0,hr).flat().find(c=>typeof c=='string'&&c.trim())||sn,it=[];
-   rows.slice(hr+1).forEach(r=>{if(r[ci]==null||r[di]==null||!String(r[di]).trim())return;const[fv,st]=pfv(fi<0?null:r[fi]);it.push({c:String(r[ci]).trim(),d:String(r[di]).trim(),fv,st,w:[0,1,2,3].map(()=>[null,null])})});
+   rows.slice(hr+1).forEach(r=>{if(r[ci]==null||r[di]==null||!String(r[di]).trim())return;const[fv,st]=pfv(fi<0?null:r[fi]);it.push({c:String(r[ci]).trim(),d:String(r[di]).trim(),fv,st,...(li>=0&&r[li]?{lab:String(r[li]).trim()}:{}),w:[0,1,2,3].map(()=>[null,null])})});
    if(it.length)secs.push({n:sn.replace(/[:\\\/?*\[\]]/g,'').replace(/ /g,'_').toUpperCase().slice(0,31),t:String(t).trim(),it})});
   if(!secs.length)return uiAlert('No encontré una tabla con las columnas CODIGO y DESCRIPCION.');
   const n=secs.reduce((a,s)=>a+s.it.length,0);
@@ -245,7 +246,8 @@ function ven(){$('#flt').innerHTML='';const m=ui.mode,N=m==='mes'?0:+m,r=[];
 
 const CW=[1.9,1.5,7.25,1.5,1.59,1.24,1.22,1.59,1.24,1.22,1.59,1.24,1.22,1.59,1.24,1.22];
 const fvs=it=>it.fv?it.fv.slice(5)+'/'+it.fv.slice(2,4):'';
-const rowsOf=s=>s.it.map(it=>[it.c,it.d,fvs(it)+(it.st?'*':''),...it.w.flatMap(([x,y])=>[x,y,x===null||y===null?null:y-x])]);
+const fd=(x,y)=>x===null||y===null?null:y===x?'✔':y>x?'+'+(y-x):y-x;
+const rowsOf=s=>s.it.map(it=>[it.c,it.d,fvs(it)+(it.st?'*':''),...it.w.flatMap(([x,y])=>[x,y,fd(x,y)])]);
 function buildPrint(){const SW=CW.reduce((a,b)=>a+b,0),cg='<colgroup>'+CW.map(w=>`<col style="width:${(w/SW*100).toFixed(3)}%">`).join('')+'</colgroup>',e=v=>v==null?'':esc(v);
  return S.secs.map(s=>{
   const h0=`<tr><td class="n"></td><td></td><td class="t d">${esc(s.t)}</td><td class="t"></td>`+[1,2,3,4].map(n=>`<td class="t" colspan="3">SEMANA ${n}</td>`).join('')+'</tr>';
@@ -271,7 +273,7 @@ function xl(secs){
  const sheets=secs.map((s,si)=>{
   let b=(s.n||'Hoja').replace(/[\[\]:*?\/\\']/g,'').slice(0,28)||'Hoja',x=b,q=2;while(nms.includes(x.toLowerCase()))x=b+q++;nms.push(x.toLowerCase());
   const rows=[],wk=c=>c<4?-1:(c-4)%3,E=st(0,0,0,'general');
-  const C=(r,c,v,y,f)=>{const a=cn(c)+r;if(f)return`<c r="${a}" s="${y}"${v===null?' t="str"':''}><f>${X(f)}</f><v>${v===null?'':v}</v></c>`;if(v===null||v===undefined||v==='')return`<c r="${a}" s="${y}"/>`;return typeof v==='number'?`<c r="${a}" s="${y}"><v>${v}</v></c>`:`<c r="${a}" s="${y}" t="inlineStr"><is><t xml:space="preserve">${X(v)}</t></is></c>`};
+  const C=(r,c,v,y,f)=>{const a=cn(c)+r;if(f)return`<c r="${a}" s="${y}"${typeof v==='number'?'':' t="str"'}><f>${X(f)}</f><v>${typeof v==='number'?v:X(v??'')}</v></c>`;if(v===null||v===undefined||v==='')return`<c r="${a}" s="${y}"/>`;return typeof v==='number'?`<c r="${a}" s="${y}"><v>${v}</v></c>`:`<c r="${a}" s="${y}" t="inlineStr"><is><t xml:space="preserve">${X(v)}</t></is></c>`};
   const R=(r,cells)=>rows.push(`<row r="${r}" ht="15" customHeight="1">${cells.join('')}</row>`);
   const k1=[];for(let c=1;c<16;c++){const w=wk(c);k1.push(c===1?C(1,1,null,E):c===2?C(1,2,s.t,st(1,0,bd('','',M,''),'left')):C(1,c,w===0?'SEMANA '+((c-4)/3+1):null,st(0,0,bd(w===0?M:'',w===2?M:'',M,''),'center')))}R(1,k1);
   const hd=['CODIGO','DESCRIPCION','F.V',...[0,1,2,3].flatMap(()=>['SISTEMA','FISICO','TOTAL'])],k2=[];
@@ -281,7 +283,7 @@ function xl(secs){
    for(let c=1;c<16;c++){const w=wk(c),y=st(c===2?1:0,0,bd(w===0?M:T,w===2?M:T,T,last&&c>=4?M:T),c===2?'left':'center');
     if(c===1)k.push(C(r,c,/^\d+$/.test(v[0])?Number(v[0]):v[0],y));
     else if(c<4)k.push(C(r,c,v[c-1],y));
-    else if(w===2){const t=v[c-1];k.push(C(r,c,t,y,`IF(OR(${cn(c-2)}${r}="",${cn(c-1)}${r}=""),"",${cn(c-1)}${r}-${cn(c-2)}${r})`))}
+    else if(w===2){const t=v[c-1];k.push(C(r,c,t,y,`IF(OR(${cn(c-2)}${r}="",${cn(c-1)}${r}=""),"",IF(${cn(c-1)}${r}=${cn(c-2)}${r},"✔",IF(${cn(c-1)}${r}>${cn(c-2)}${r},"+"&(${cn(c-1)}${r}-${cn(c-2)}${r}),${cn(c-1)}${r}-${cn(c-2)}${r})))`))}
     else k.push(C(r,c,v[c-1],y))}
    R(r,k)});
   return{x:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="B1:P${rows.length}"/><sheetViews><sheetView workbookViewId="0"><pane ySplit="2" topLeftCell="A3" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols>${W.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('')}</cols><sheetData>${rows.join('')}</sheetData><mergeCells count="4">${[0,1,2,3].map(k=>`<mergeCell ref="${cn(4+3*k)}1:${cn(6+3*k)}1"/>`).join('')}</mergeCells><pageMargins left="0.3" right="0.3" top="0.4" bottom="0.4" header="0.2" footer="0.2"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/></worksheet>`,n:x}});
@@ -295,10 +297,71 @@ function xl(secs){
 function exportXlsx(){if(!S.secs.length)return uiAlert('No hay datos para exportar.');
  const a=document.createElement('a');a.href=URL.createObjectURL(xl(S.secs));a.download='INVENTARIO_'+CU.n.toUpperCase().replace(/[^A-Z0-9]+/g,'_')+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
  return uiAlert('Tu Excel se descargó con el mismo formato de tu inventario.','ok')}
+/* ===== Política de devolución ===== */
+const PKEY='inv_pol_v1';let POL=ld(PKEY,null);
+const nz=s=>String(s??'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z0-9& ]+/g,' ').replace(/\s+/g,' ').trim();
+function pmo(v){if(v==null)return null;if(typeof v==='number')return v>0?v:null;const s=nz(v);if(!s||s==='0'||s==='NO')return null;let m=s.match(/(\d+)\s*MES/);if(m)return+m[1];m=s.match(/(\d+)\s*(A\s*\d+\s*)?DIA/);if(m)return Math.round(+m[1]/30*10)/10;return null}
+const ptx=v=>{const s=String(v??'').trim();return s==='0'||nz(s)==='NO'?'':s.toLowerCase()};
+function parsePol(wb){
+ for(const sn of wb.SheetNames){const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,defval:null});
+  const hr=rows.findIndex((r,i)=>i<15&&r.some(c=>nz(c)==='GRUPO')&&r.some(c=>nz(c).startsWith('ANTES DE VENCER')));if(hr<0)continue;
+  const H=rows[hr].map(nz),ix=n=>H.findIndex(x=>x===n),st=n=>H.findIndex(x=>x.startsWith(n));
+  const iG=ix('GRUPO'),iN=st('NOMBRE PROV'),iA=ix('ACT'),iAc=st('ACEPTA'),iB=st('ANTES DE VENCER'),iV=ix('VENCIDO'),iP=st('DESPUES DE VENCIDO'),iO=st('OBSERV');
+  const M={};
+  rows.slice(hr+1).forEach(r=>{const n=String(r[iG]??'').trim();if(!n)return;const k=nz(n);if(!k)return;
+   (M[k]=M[k]||{k,n,r:[]}).r.push({a:nz(r[iA])==='SI',acc:nz(r[iAc])!=='NO',m:pmo(r[iB]),t:ptx(r[iB]),v:nz(r[iV])==='SI',p:ptx(r[iP]),o:String(r[iO]??'').trim()==='0'?'':String(r[iO]??'').trim(),pr:String(r[iN]??'').trim()})});
+  const g=Object.values(M).map(x=>{const act=x.r.filter(y=>y.a),u=act.length?act:x.r,ok=u.filter(y=>y.acc);
+   const b=ok.reduce((a,y)=>y.m!=null&&(a===null||y.m>a.m)?y:a,null);
+   return{k:x.k,n:x.n,m:b?b.m:null,t:b?b.t:'',v:u.some(y=>y.v&&y.acc),p:(u.find(y=>y.p)||{}).p||'',o:(u.find(y=>y.o)||{}).o||'',a:act.length>0}}).sort((a,b)=>a.k.localeCompare(b.k));
+  if(g.length)return g}
+ return null}
+async function impPol(f){if(!f)return;if(!window.XLSX)return uiAlert('Para cargar el archivo necesitas conexión a internet la primera vez.');
+ try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'}),g=parsePol(wb);
+  if(!g)return uiAlert('No encontré la tabla de política (columnas Grupo y Antes de vencer).');
+  const con=g.filter(x=>x.m!=null).length;
+  if(!await uiConfirm('Encontré '+g.length+' laboratorios ('+con+' aceptan devolución antes de vencer). '+(POL?'Esto reemplaza la política actual. ':'')+'¿Cargar?'))return;
+  POL={name:f.name,ts:Date.now(),g};try{localStorage.setItem(PKEY,JSON.stringify(POL))}catch(e){uiAlert('No se pudo guardar la política en este navegador.')}
+  render();uiAlert('Política cargada: '+g.length+' laboratorios.','ok')}catch(e){uiAlert('No pude leer ese archivo.')}}
+function labRes(t){const k=nz(t);if(!k||!POL)return null;return POL.g.find(g=>g.k===k)||POL.g.filter(g=>g.k.includes(k)||k.includes(g.k)).sort((a,b)=>b.k.length-a.k.length)[0]||null}
+function labAuto(d){const D=' '+nz(d)+' ';let b=null;POL.g.forEach(g=>{if(g.k.length>=4&&D.includes(' '+g.k+' ')&&(!b||g.k.length>b.k.length))b=g});return b}
+const labOf=it=>{if(!POL||it.lab==='-')return null;return it.lab?labRes(it.lab):labAuto(it.d)};
+const labLine=it=>{if(!POL)return'';const g=labOf(it);return`<div class="top" style="margin:-6px 0 10px;justify-content:flex-start;gap:6px">Laboratorio: <b style="color:var(--navy)">${g?esc(g.n):'sin asignar'}</b>${g&&g.m!=null?`<span class="tag">${esc(g.t||g.m+' meses')}</span>`:''}</div>`};
+async function asignLab(si,i){const it=S.secs[si].it[i];
+ const t=await uiPrompt('Laboratorio de:\n'+it.d+'\n\nEscribe parte del nombre. Deja vacío para automático o escribe - para ninguno.',it.lab&&it.lab!=='-'?it.lab:'');if(t===null)return;
+ const s=t.trim();if(s===''){delete it.lab;save();return render()}if(s==='-'){it.lab='-';save();return render()}
+ const k=nz(s),ex=POL.g.find(g=>g.k===k),c=ex?[ex]:POL.g.filter(g=>g.k.includes(k));
+ if(!c.length)return uiAlert('No encontré ese laboratorio en la política cargada.');
+ let g=c[0];if(c.length>1){if(c.length>12)return uiAlert('Hay '+c.length+' laboratorios con ese texto. Escribe más letras.');
+  const n=parseInt(await uiPrompt('Escribe el número del laboratorio:\n'+c.map((x,j)=>(j+1)+'. '+x.n).join('\n')),10);if(!(n>=1&&n<=c.length))return;g=c[n-1]}
+ it.lab=g.n;save();render()}
+const PM=[['ya','Toca sacar'],['prox','Próximo mes'],['venc','Vencidos'],['lab','Por laboratorio'],['sin','Sin laboratorio']];
+const mtxt=n=>n+(n==1?' mes':' meses');
+function pstat(d,m){return d<0?['Vencido','n']:d<=m?['Toca sacar','n']:d<=m+1?['Próximo mes','w']:['Faltan '+mtxt(Math.ceil(d-m))+' para sacar','']}
+function pol(){$('#flt').innerHTML='';
+ const fileCard=POL?`<div class="card"><div class="top"><span>Política: <b style="color:var(--navy)">${esc(POL.name)}</b></span><span>${POL.g.length} labs · ${new Date(POL.ts).toLocaleDateString('es')}</span></div><div class="act"><button onclick="$('#pf').click()">Cambiar archivo</button></div></div>`:'';
+ if(!POL){$('#ctl').innerHTML='';$('#main').innerHTML='<div class="card"><div class="desc">Política de devolución</div><p class="top">Carga el Excel de políticas de devolución. El sistema cruza los laboratorios con tus productos y te dice cuáles toca sacar. Cuando actualicen la política, cargas el archivo nuevo y se reemplaza.</p><button class="pri" onclick="$(\'#pf\').click()">Cargar archivo de política</button></div>';return}
+ const m=ui.pm||'ya';
+ $('#ctl').innerHTML='<div class="chips">'+PM.map(([k,x])=>`<button class="${k===m?'pri':''}" onclick="ui.pm='${k}';pol()">${x}</button>`).join('')+'</div>';
+ const E=[],SIN=[];
+ S.secs.forEach((s,si)=>s.it.forEach((it,i)=>{const g=labOf(it);if(!g){if(it.fv)SIN.push({s,si,it,i});return}if(!it.fv)return;E.push({s,si,it,i,g,d:md(it)})}));
+ const q=$('#pq')?$('#pq').value:'';
+ const row=(e,show)=>{const[l,c]=e.g.m!=null?pstat(e.d,e.g.m):[e.d<0?'Vencido':'Sin devolución por vencer','n'];return`<div class="card ${c==='n'?'cx':c==='w'?'cw':''}"><div class="top"><span>${esc(e.it.c)} · ${esc(nm(e.s))}</span><span class="tag ${c}">${l}</span></div><div class="desc" style="margin-bottom:6px">${esc(e.it.d)}</div><div class="top"><span>Vence ${lbl(e.it)}${show?'':' · '+esc(e.g.n)}</span><button style="padding:5px 12px;font-size:13px" onclick="asignLab(${e.si},${e.i})">Lab</button></div></div>`};
+ const rule=g=>g.m!=null?`Acepta desde ${esc(g.t||mtxt(g.m))} antes de vencer`:'No acepta devolución por vencer';
+ const ven=g=>g.v?'Vencido: acepta'+(g.p?' hasta '+esc(g.p):''):'Vencido: no acepta';
+ const grp=(L,empty)=>{if(!L.length)return`<div class="card">${empty}</div>`;const B={};L.forEach(e=>(B[e.g.k]=B[e.g.k]||{g:e.g,L:[]}).L.push(e));
+  return Object.values(B).sort((a,b)=>a.g.n.localeCompare(b.g.n)).map(({g,L})=>`<div class="desc" style="margin:14px 2px 2px;font-size:18px">${esc(g.n)} <span class="tag">${L.length} producto${L.length>1?'s':''}</span></div><p class="top" style="margin:0 2px 8px;display:block">${rule(g)} · ${ven(g)}${g.o?'<br>'+esc(g.o):''}</p>`+L.sort((a,b)=>a.d-b.d).map(e=>row(e,1)).join('')).join('')};
+ let h='';
+ if(m==='ya'){const L=E.filter(e=>e.g.m!=null&&e.d>=0&&e.d<=e.g.m);h=`<p class="top" style="margin:0 2px 6px">${L.length} producto${L.length==1?'':'s'} para sacar ahora</p>`+grp(L,'No tienes productos dentro de la ventana de devolución.')}
+ else if(m==='prox'){const L=E.filter(e=>e.g.m!=null&&e.d>e.g.m&&e.d<=e.g.m+1);h=`<p class="top" style="margin:0 2px 6px">${L.length} producto${L.length==1?'':'s'} que entran en ventana el próximo mes</p>`+grp(L,'Nada entra en ventana el próximo mes.')}
+ else if(m==='venc'){const L=E.filter(e=>e.d<0);h=`<p class="top" style="margin:0 2px 6px">${L.length} producto${L.length==1?'':'s'} ya vencido${L.length==1?'':'s'}</p>`+grp(L,'No tienes productos vencidos con laboratorio asignado.')}
+ else if(m==='lab'){const qq=nz(q);const L=E.filter(e=>!qq||nz(e.g.n).includes(qq));h=`<input id="pq" type="search" placeholder="Buscar laboratorio" value="${esc(q)}" oninput="pol();const x=$('#pq');x.focus();x.setSelectionRange(x.value.length,x.value.length)" style="margin-bottom:8px">`+grp(L,'No hay productos con ese laboratorio.')}
+ else{h=`<p class="top" style="margin:0 2px 6px">${SIN.length} producto${SIN.length==1?'':'s'} con fecha sin laboratorio. Toca «Lab» para asignarlo.</p>`+(SIN.length?SIN.map(e=>`<div class="card"><div class="top"><span>${esc(e.it.c)} · ${esc(nm(e.s))}</span><span class="tag">${lbl(e.it)}</span></div><div class="desc" style="margin-bottom:8px">${esc(e.it.d)}</div><button style="padding:5px 12px;font-size:13px" onclick="asignLab(${e.si},${e.i})">Asignar laboratorio</button></div>`).join(''):'<div class="card">Todos tus productos con fecha tienen laboratorio.</div>')}
+ $('#main').innerHTML=h+fileCard}
+
 function start(){welcome()}
 function fade(){const m=$('#main');if(m.classList){m.classList.remove('fi');void m.offsetWidth;m.classList.add('fi')}}
 function go(v){ui.view=v;render();fade()}
-function render(){[1,2,3,4].forEach(i=>$('#n'+i).className=['inv','ven','res','mas'][i-1]==ui.view?'on':'');({inv:()=>{if(!S.secs.length)return empty();ui.sec=Math.min(ui.sec,S.secs.length-1);ctl();list()},ven,res,mas,per})[ui.view]()}
+function render(){Object.entries({n1:'inv',n2:'ven',n5:'pol',n3:'res',n4:'mas'}).forEach(([id,v])=>$('#'+id).className=v==ui.view?'on':'');({inv:()=>{if(!S.secs.length)return empty();ui.sec=Math.min(ui.sec,S.secs.length-1);ctl();list()},ven,pol,res,mas,per})[ui.view]()}
 start();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
