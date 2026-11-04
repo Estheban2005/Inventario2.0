@@ -73,6 +73,8 @@ nav .on{color:var(--g2)}nav .on .ic{background:var(--mint)}
 #scn .sf{position:relative;width:78%;max-width:340px;height:34%;max-height:200px;border:3px solid var(--g1);border-radius:18px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
 #scn #scm{position:absolute;left:16px;right:16px;bottom:104px;text-align:center;color:#fff;font-weight:600}#scn button{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);padding:12px 34px;background:#fff}
 .al{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;border-radius:14px;padding:11px 14px;margin-bottom:6px;background:var(--soft);color:var(--navy);font-size:15px;font-weight:600}.al b{font-size:19px}.al span{margin-left:auto;font-size:20px}.al.n{background:#fdeaea;color:var(--neg)}.al.w{background:#fff1dc;color:var(--warn)}
+#toast{position:fixed;left:50%;bottom:104px;transform:translate(-50%,12px);z-index:30;max-width:88%;background:var(--navy);color:#fff;padding:11px 18px;border-radius:999px;font-weight:600;font-size:14px;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}#toast.on{opacity:1;transform:translate(-50%,0)}
+.card.fl{animation:fl 2.4s ease}@keyframes fl{0%,60%{box-shadow:0 0 0 4px var(--g1)}100%{box-shadow:0 2px 12px rgba(20,50,20,.06)}}
 #pr{display:none}
 @media print{@page{size:A4 landscape;margin:7mm}html,body{background:#fff!important;padding:0!important}body>*:not(#pr){display:none!important}#pr{display:block}
 #pr table{width:100%;border-collapse:collapse;table-layout:fixed;font-family:Calibri,Carlito,Arial,sans-serif;font-size:9.5pt;page-break-after:always;color:#000}#pr table:last-child{page-break-after:auto}
@@ -81,7 +83,7 @@ nav .on{color:var(--g2)}nav .on .ic{background:var(--mint)}
 </style></head><body>
 <div id="auth" hidden></div><div id="app" hidden><input id="imf" type="file" accept=".xlsx,.xls,.ods,.csv" hidden onchange="imp(this.files[0]);this.value=''"><input id="pf" type="file" accept=".xlsx,.xls,.ods" hidden onchange="impPol(this.files[0]);this.value=''"><header><div class="strip">INVENTARIO · FARMACIA SAAS</div><div class="hd"><button id="av" class="avb" onclick="go('per')" aria-label="Mi perfil"></button><div style="flex:1;min-width:0"><div class="sub" id="sb">Farmacia SAAS</div><h1 id="hi">Inventario</h1></div><img id="lg" alt="Farmacia SAAS"></div><div id="ctl" style="margin-top:8px"></div></header><main><div id="flt"></div><div id="main"></div></main>
 <nav><button id="n1" onclick="go('inv')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5h6M9 13l2 2 4-4"/></svg></span>Inventario</button><button id="n2" onclick="go('ven')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span>Vencen</button><button id="n5" onclick="go('pol')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7H5v-4M5 7a8 8 0 111 9"/><path d="M12 8v4l3 2"/></svg></span>Devol.</button><button id="n3" onclick="go('res')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>Resumen</button><button id="n4" onclick="go('mas')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg></span>Más</button></nav><div id="sh" hidden><div class="sb"><h3>Agregar producto</h3><label>Código (SKU)<input id="ac" inputmode="numeric" autocomplete="off" oninput="acIn()"></label><button type="button" onclick="scanOpen()" style="width:100%;margin-bottom:12px">Escanear código de barras</button><div id="as" class="top"></div><label>Descripción<input id="ad" autocomplete="off"></label><div class="bar"><button onclick="shut()">Cancelar</button><button class="pri" onclick="saveNew()">Agregar</button></div></div></div></div>
-<div id="scn" hidden><video id="scv" playsinline muted></video><div class="sf"></div><div id="scm">Apunta al código de barras</div><button onclick="scanClose()">Cerrar</button></div>
+<div id="toast"></div><div id="scn" hidden><video id="scv" playsinline muted></video><div class="sf"></div><div id="scm">Apunta al código de barras</div><button onclick="scanClose()">Cerrar</button></div>
 <div id="dlg" hidden><div class="db"><div id="dic" class="di"></div><h3 id="dt"></h3><p id="dm"></p><input id="dp" type="text" hidden><div class="bar" id="dbtn"></div></div></div><div id="pr"></div>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -107,8 +109,8 @@ const dcls=v=>v===null?'':v<0?'neg':v>0?'pos':'ok';
 const cur=i=>S.secs[ui.sec].it[i];
 
 function ctl(){$('#ctl').innerHTML=`<div class="bar"><select onchange="ui.sec=+this.value;list()">${S.secs.map((s,i)=>[i,esc(nm(s))]).map(([k,x])=>`<option value="${k}" ${k==ui.sec?'selected':''}>${x}</option>`).join('')}</select><select onchange="ui.wk=+this.value;list()">${opt([0,1,2,3].map(i=>[i,'Semana '+(i+1)]),ui.wk)}</select></div>`;
- $('#flt').innerHTML=`<div id="prg" class="top" style="margin-bottom:8px"></div><input id="q" type="search" placeholder="Buscar por código o nombre" oninput="list()"><div class="bar" style="margin:8px 0"><select onchange="ui.f=this.value;list()">${opt([['t','Todos'],['p','Pendientes'],['d','Con diferencia']],ui.f)}</select><select onchange="ui.o=this.value;list()">${opt([['o','Original'],['c','Código'],['n','Nombre'],['v','Vence']],ui.o)}</select></div>`}
-const card=(it,i)=>{const[s,f]=it.w[ui.wk],v=df(it),d=md(it);return `<div class="card ${d===null?'':d<=0?'cx':d<=7?'cw':''}"><div class="top"><span>${esc(it.c)}</span><span id="t${i}">${tag(it)}</span></div><div class="desc">${esc(it.d)}</div>${labLine(it)}
+ $('#flt').innerHTML=`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="pri" style="flex:1;padding:14px" onclick="add()">Agregar producto</button><button class="pri" style="width:56px;padding:0;display:grid;place-items:center" onclick="scanOpen('auto')" aria-label="Escanear código de barras"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/><path d="M8 9v6M11 9v6M14 9v6M17 9v6"/></svg></button></div><div id="prg" class="top" style="margin-bottom:8px"></div><input id="q" type="search" placeholder="Buscar por código o nombre" oninput="list()"><div class="bar" style="margin:8px 0"><select onchange="ui.f=this.value;list()">${opt([['t','Todos'],['p','Pendientes'],['d','Con diferencia']],ui.f)}</select><select onchange="ui.o=this.value;list()">${opt([['o','Original'],['c','Código'],['n','Nombre'],['v','Vence']],ui.o)}</select></div>`}
+const card=(it,i)=>{const[s,f]=it.w[ui.wk],v=df(it),d=md(it);return `<div id="k${i}" class="card ${d===null?'':d<=0?'cx':d<=7?'cw':''}"><div class="top"><span>${esc(it.c)}</span><span id="t${i}">${tag(it)}</span></div><div class="desc">${esc(it.d)}</div>${labLine(it)}
 <label class="lb">Vence<input type="month" value="${it.fv}" onchange="setFv(${i},this.value)"></label>
 <div class="row"><label>Sistema<input type="number" inputmode="numeric" value="${s??''}" onchange="setV(${i},0,this.value)"></label><label>Físico<input type="number" inputmode="numeric" value="${f??''}" onchange="setV(${i},1,this.value)"></label><div id="d${i}" class="diff ${dcls(v)}">${dtxt(v)}</div></div>
 <div class="act"><button onclick="edit(${i})">Editar</button><button onclick="del(${i})">Eliminar</button>${POL?`<button style="border-color:var(--line);color:var(--navy)" onclick="asignLab(${ui.sec},${i})">Laboratorio</button>`:''}<label><input type="checkbox" ${it.st?'checked':''} onchange="setSt(${i},this.checked)"> Próximo a vencer (*)</label></div></div>`};
@@ -118,7 +120,7 @@ function list(){const q=($('#q')?.value||'').toLowerCase(),its=S.secs[ui.sec].it
  const r=its.map((it,i)=>({it,i})).filter(({it})=>(it.c+' '+it.d).toLowerCase().includes(q)&&(ui.f=='t'||(ui.f=='p'?!ok(it):df(it)!==null&&df(it)!==0)));
  const k={c:x=>x.it.c,n:x=>x.it.d,v:x=>x.it.fv||'9999'}[ui.o];
  if(k)r.sort((a,b)=>String(k(a)).localeCompare(String(k(b)),'es',{numeric:true}));
- $('#main').innerHTML=alertasHtml()+r.map(({it,i})=>card(it,i)).join('')+'<button class="pri" style="width:100%;padding:14px" onclick="add()">Agregar producto</button><button style="width:100%;padding:14px;margin-top:8px" onclick="add();scanOpen()">Escanear código de barras</button>'}
+ $('#main').innerHTML=alertasHtml()+r.map(({it,i})=>card(it,i)).join('')}
 function upd(i){const it=cur(i),v=df(it),d=$('#d'+i);d.textContent=dtxt(v);d.className='diff '+dcls(v);$('#t'+i).innerHTML=tag(it);prog();save()}
 function setV(i,k,v){cur(i).w[ui.wk][k]=v===''?null:Number(v);upd(i)}
 function setFv(i,v){cur(i).fv=v;upd(i)}
@@ -375,7 +377,8 @@ async function onScan(code){code=String(code).trim();BC=code;const s=$('#as');
  s.textContent='Código de barras '+code+' leído. Escribe el SKU y la descripción: la próxima vez se llenará solo.'}
 function loadZx(){return new Promise((ok,no)=>{if(window.ZXing)return ok();const e=document.createElement('script');e.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';e.onload=ok;e.onerror=no;document.head.appendChild(e)})}
 function scanClose(){if(scn){try{scn.stop()}catch(e){}scn=null}const o=$('#scn');if(o)o.hidden=true}
-async function scanOpen(){
+let scanMode='sheet';
+async function scanOpen(m){scanMode=m||'sheet';
  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return uiAlert('Este navegador no permite usar la cámara. Escribe el código a mano.');
  $('#scn').hidden=false;$('#scm').textContent='Apunta al código de barras';
  try{
@@ -383,12 +386,28 @@ async function scanOpen(){
    const det=new BarcodeDetector({formats:BF}),st=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false}),v=$('#scv');
    v.srcObject=st;await v.play();let tm2=0,busy=0;
    scn={stop:()=>{clearInterval(tm2);st.getTracks().forEach(x=>x.stop());v.srcObject=null}};
-   tm2=setInterval(async()=>{if(busy)return;busy=1;try{const r=await det.detect(v);if(r.length){const c=r[0].rawValue;scanClose();onScan(c)}}catch(e){}busy=0},300)
+   tm2=setInterval(async()=>{if(busy)return;busy=1;try{const r=await det.detect(v);if(r.length){const c=r[0].rawValue;scanClose();scanDone(c)}}catch(e){}busy=0},300)
   }else{
    await loadZx();const rd=new ZXing.BrowserMultiFormatReader();scn={stop:()=>rd.reset()};
-   rd.decodeFromConstraints({video:{facingMode:{ideal:'environment'}},audio:false},'scv',r=>{if(r){const c=r.getText();scanClose();onScan(c)}})
+   rd.decodeFromConstraints({video:{facingMode:{ideal:'environment'}},audio:false},'scv',r=>{if(r){const c=r.getText();scanClose();scanDone(c)}})
   }
  }catch(e){scanClose();uiAlert(e&&e.name==='NotAllowedError'?'Necesito permiso para usar la cámara. Actívalo en los ajustes del navegador.':'No pude abrir el escáner. Revisa la cámara y la conexión a internet, o escribe el código a mano.')}}
+
+let tt=0;function toast(m,ms){const e=$('#toast');if(!e)return;clearTimeout(tt);if(!m){e.classList.remove('on');return}e.textContent=m;e.classList.add('on');if(ms!==0)tt=setTimeout(()=>e.classList.remove('on'),ms||2600)}
+function flash(i){const e=$('#k'+i);if(e){e.scrollIntoView({block:'center'});e.classList.add('fl');setTimeout(()=>e.classList.remove('fl'),2500)}}
+function goItem(L,msg){ui.sec=S.secs.indexOf(L.s);ui.f='t';ui.o='o';ctl();list();flash(L.s.it.indexOf(L.it));toast(msg)}
+const scanDone=c=>scanMode==='auto'?autoScan(c):onScan(c);
+async function autoScan(code){code=String(code).trim();
+ const L=findLocal(code);if(L)return goItem(L,'Ya lo tienes en '+nm(L.s));
+ toast('Código leído. Buscando producto…',0);
+ const j=CFG.proxy?await look(code):{err:1};
+ if(j.found&&j.sku){const sku=String(j.sku),L2=findLocal(sku);
+  if(L2){if(sku!==code)L2.it.bc=code;save();return goItem(L2,'Ya lo tienes en '+nm(L2.s))}
+  const its=S.secs[ui.sec].it;its.push({c:sku,d:String(j.name).toUpperCase(),fv:'',st:0,...(sku!==code?{bc:code}:{}),w:[0,1,2,3].map(()=>[null,null])});
+  save();ui.f='t';ui.o='o';ctl();list();flash(its.length-1);return toast('✓ Agregado: '+String(j.name).toUpperCase().slice(0,40))}
+ toast('');add();BC=code;
+ if(j.found){$('#ad').value=String(j.name).toUpperCase();$('#as').textContent='Encontré la descripción. Escribe el código (SKU) del producto.'}
+ else $('#as').textContent=j.err?'No pude conectar con la página. Escribe el SKU y la descripción: la próxima vez se llenará solo.':'Código de barras '+code+' leído, pero no lo encontré en la página. Escribe el SKU y la descripción: la próxima vez se llenará solo.'}
 /* ===== Alertas ===== */
 function alertasHtml(){let mes=0,vv=0,pe=0;
  S.secs.forEach(s=>s.it.forEach(it=>{const d=md(it);if(d===null)return;if(d<0)vv++;else if(d===0)mes++;if(POL){const g=labOf(it);if(g&&g.m!=null&&d>=0&&d<=g.m)pe++}}));
