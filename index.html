@@ -52,7 +52,7 @@ nav .on{color:var(--g2)}nav .on .ic{background:var(--mint)}
 #auth input:focus{border-color:var(--g1);box-shadow:0 0 0 4px rgba(61,169,58,.18)}
 #auth button{width:100%;padding:14px;margin-bottom:10px;font-size:16px}
 #auth .ub{display:flex;align-items:center;gap:12px;text-align:left;color:var(--navy);border-color:var(--line)}
-.av{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--g2);color:#fff;font-weight:700}
+.av{display:grid;place-items:center;width:36px;height:36px;flex:none;overflow:hidden;border-radius:50%;background:var(--g2);color:#fff;font-weight:700}#auth .av img{width:100%;height:100%;filter:none;object-fit:cover;border-radius:50%}
 @keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .fi{animation:up .28s ease both}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -69,6 +69,10 @@ nav .on{color:var(--g2)}nav .on .ic{background:var(--mint)}
 .di svg{width:34px;height:34px}.di.ok{background:#e4f5e1;color:var(--g2)}.di.err{background:#fdeaea;color:var(--neg)}.di.warn{background:#fff1dc;color:var(--warn)}.di.info,.di.ask{background:#e7f0fd;color:var(--pos)}
 @keyframes fade{from{opacity:0}to{opacity:1}}@keyframes pop{from{opacity:0;transform:scale(.8) translateY(14px)}to{opacity:1;transform:none}}
 @keyframes bump{from{transform:scale(.4)}to{transform:none}}@keyframes ring{0%{transform:scale(.9);opacity:.5}100%{transform:scale(1.35);opacity:0}}
+#scn{position:fixed;inset:0;z-index:40;background:#000;display:flex;align-items:center;justify-content:center}#scn[hidden]{display:none}#scn video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#scn .sf{position:relative;width:78%;max-width:340px;height:34%;max-height:200px;border:3px solid var(--g1);border-radius:18px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
+#scn #scm{position:absolute;left:16px;right:16px;bottom:104px;text-align:center;color:#fff;font-weight:600}#scn button{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);padding:12px 34px;background:#fff}
+.al{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;border-radius:14px;padding:11px 14px;margin-bottom:6px;background:var(--soft);color:var(--navy);font-size:15px;font-weight:600}.al b{font-size:19px}.al span{margin-left:auto;font-size:20px}.al.n{background:#fdeaea;color:var(--neg)}.al.w{background:#fff1dc;color:var(--warn)}
 #pr{display:none}
 @media print{@page{size:A4 landscape;margin:7mm}html,body{background:#fff!important;padding:0!important}body>*:not(#pr){display:none!important}#pr{display:block}
 #pr table{width:100%;border-collapse:collapse;table-layout:fixed;font-family:Calibri,Carlito,Arial,sans-serif;font-size:9.5pt;page-break-after:always;color:#000}#pr table:last-child{page-break-after:auto}
@@ -76,7 +80,8 @@ nav .on{color:var(--g2)}nav .on .ic{background:var(--mint)}
 #pr .t{border:2pt solid #000}#pr .h{background:#B4C6E7}#pr .d{font-size:8pt;text-align:left}#pr .n{border:0}#pr thead{display:table-header-group}}
 </style></head><body>
 <div id="auth" hidden></div><div id="app" hidden><input id="imf" type="file" accept=".xlsx,.xls,.ods,.csv" hidden onchange="imp(this.files[0]);this.value=''"><input id="pf" type="file" accept=".xlsx,.xls,.ods" hidden onchange="impPol(this.files[0]);this.value=''"><header><div class="strip">INVENTARIO · FARMACIA SAAS</div><div class="hd"><button id="av" class="avb" onclick="go('per')" aria-label="Mi perfil"></button><div style="flex:1;min-width:0"><div class="sub" id="sb">Farmacia SAAS</div><h1 id="hi">Inventario</h1></div><img id="lg" alt="Farmacia SAAS"></div><div id="ctl" style="margin-top:8px"></div></header><main><div id="flt"></div><div id="main"></div></main>
-<nav><button id="n1" onclick="go('inv')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5h6M9 13l2 2 4-4"/></svg></span>Inventario</button><button id="n2" onclick="go('ven')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span>Vencen</button><button id="n5" onclick="go('pol')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7H5v-4M5 7a8 8 0 111 9"/><path d="M12 8v4l3 2"/></svg></span>Devol.</button><button id="n3" onclick="go('res')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>Resumen</button><button id="n4" onclick="go('mas')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg></span>Más</button></nav><div id="sh" hidden><div class="sb"><h3>Agregar producto</h3><label>Código (SKU)<input id="ac" inputmode="numeric" autocomplete="off" oninput="acIn()"></label><div id="as" class="top"></div><label>Descripción<input id="ad" autocomplete="off"></label><div class="bar"><button onclick="shut()">Cancelar</button><button class="pri" onclick="saveNew()">Agregar</button></div></div></div></div>
+<nav><button id="n1" onclick="go('inv')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5h6M9 13l2 2 4-4"/></svg></span>Inventario</button><button id="n2" onclick="go('ven')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span>Vencen</button><button id="n5" onclick="go('pol')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7H5v-4M5 7a8 8 0 111 9"/><path d="M12 8v4l3 2"/></svg></span>Devol.</button><button id="n3" onclick="go('res')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>Resumen</button><button id="n4" onclick="go('mas')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg></span>Más</button></nav><div id="sh" hidden><div class="sb"><h3>Agregar producto</h3><label>Código (SKU)<input id="ac" inputmode="numeric" autocomplete="off" oninput="acIn()"></label><button type="button" onclick="scanOpen()" style="width:100%;margin-bottom:12px">Escanear código de barras</button><div id="as" class="top"></div><label>Descripción<input id="ad" autocomplete="off"></label><div class="bar"><button onclick="shut()">Cancelar</button><button class="pri" onclick="saveNew()">Agregar</button></div></div></div></div>
+<div id="scn" hidden><video id="scv" playsinline muted></video><div class="sf"></div><div id="scm">Apunta al código de barras</div><button onclick="scanClose()">Cerrar</button></div>
 <div id="dlg" hidden><div class="db"><div id="dic" class="di"></div><h3 id="dt"></h3><p id="dm"></p><input id="dp" type="text" hidden><div class="bar" id="dbtn"></div></div></div><div id="pr"></div>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -113,21 +118,21 @@ function list(){const q=($('#q')?.value||'').toLowerCase(),its=S.secs[ui.sec].it
  const r=its.map((it,i)=>({it,i})).filter(({it})=>(it.c+' '+it.d).toLowerCase().includes(q)&&(ui.f=='t'||(ui.f=='p'?!ok(it):df(it)!==null&&df(it)!==0)));
  const k={c:x=>x.it.c,n:x=>x.it.d,v:x=>x.it.fv||'9999'}[ui.o];
  if(k)r.sort((a,b)=>String(k(a)).localeCompare(String(k(b)),'es',{numeric:true}));
- $('#main').innerHTML=r.map(({it,i})=>card(it,i)).join('')+'<button class="pri" style="width:100%;padding:14px" onclick="add()">Agregar producto</button>'}
+ $('#main').innerHTML=alertasHtml()+r.map(({it,i})=>card(it,i)).join('')+'<button class="pri" style="width:100%;padding:14px" onclick="add()">Agregar producto</button><button style="width:100%;padding:14px;margin-top:8px" onclick="add();scanOpen()">Escanear código de barras</button>'}
 function upd(i){const it=cur(i),v=df(it),d=$('#d'+i);d.textContent=dtxt(v);d.className='diff '+dcls(v);$('#t'+i).innerHTML=tag(it);prog();save()}
 function setV(i,k,v){cur(i).w[ui.wk][k]=v===''?null:Number(v);upd(i)}
 function setFv(i,v){cur(i).fv=v;upd(i)}
 function setSt(i,b){cur(i).st=b?1:0;upd(i)}
 let tm=0;
-function add(){$('#ac').value='';$('#ad').value='';$('#as').textContent=CFG.proxy?'Escribe el código y busco la descripción en la página de la farmacia.':'Escribe el código y la descripción. Para la búsqueda automática, conéctala en Más.';$('#sh').hidden=false;setTimeout(()=>$('#ac').focus&&$('#ac').focus(),50)}
-function shut(){$('#sh').hidden=true}
+function add(){BC='';$('#ac').value='';$('#ad').value='';$('#as').textContent=CFG.proxy?'Escribe el código y busco la descripción en la página de la farmacia.':'Escribe el código y la descripción. Para la búsqueda automática, conéctala en Más.';$('#sh').hidden=false;setTimeout(()=>$('#ac').focus&&$('#ac').focus(),50)}
+function shut(){scanClose();$('#sh').hidden=true}
 function acIn(){clearTimeout(tm);const c=$('#ac').value.trim();if(c.length<3||!CFG.proxy)return;tm=setTimeout(()=>find(c),600)}
 async function find(c){const s=$('#as');s.textContent='Buscando en la página…';const j=await look(c);if($('#ac').value.trim()!==c)return;
  if(j.found){$('#ad').value=String(j.name).toUpperCase();s.textContent='✓ Encontrado en la página. Puedes corregirlo.'}
  else s.textContent=j.err?'No pude conectar con la página. Escribe la descripción a mano.':'No encontré ese código en la página. Escribe la descripción a mano.'}
 async function saveNew(){const c=$('#ac').value.trim(),d=$('#ad').value.trim(),its=S.secs[ui.sec].it;if(!c||!d)return uiAlert('Escribe el código y la descripción.');
  if(its.some(i=>i.c===c)&&!await uiConfirm('Ese código ya está en esta sección. ¿Agregarlo igual?'))return;
- its.push({c,d:d.toUpperCase(),fv:'',st:0,w:[0,1,2,3].map(()=>[null,null])});save();shut();ui.f='t';ui.o='o';ctl();list();scrollTo(0,document.body.scrollHeight)}
+ its.push({c,d:d.toUpperCase(),fv:'',st:0,...(BC&&BC!==c?{bc:BC}:{}),w:[0,1,2,3].map(()=>[null,null])});save();shut();ui.f='t';ui.o='o';ctl();list();scrollTo(0,document.body.scrollHeight)}
 async function edit(i){const it=cur(i),c=await uiPrompt('Código',it.c);if(c===null)return;const d=await uiPrompt('Descripción',it.d);if(d===null)return;it.c=c.trim()||it.c;it.d=d.trim()||it.d;save();list()}
 async function del(i){if(await uiConfirm('¿Eliminar este producto?')){S.secs[ui.sec].it.splice(i,1);save();list()}}
 
@@ -357,6 +362,39 @@ function pol(){$('#flt').innerHTML='';
  else if(m==='lab'){const qq=nz(q);const L=E.filter(e=>!qq||nz(e.g.n).includes(qq));h=`<input id="pq" type="search" placeholder="Buscar laboratorio" value="${esc(q)}" oninput="pol();const x=$('#pq');x.focus();x.setSelectionRange(x.value.length,x.value.length)" style="margin-bottom:8px">`+grp(L,'No hay productos con ese laboratorio.')}
  else{h=`<p class="top" style="margin:0 2px 6px">${SIN.length} producto${SIN.length==1?'':'s'} con fecha sin laboratorio. Toca «Lab» para asignarlo.</p>`+(SIN.length?SIN.map(e=>`<div class="card"><div class="top"><span>${esc(e.it.c)} · ${esc(nm(e.s))}</span><span class="tag">${lbl(e.it)}</span></div><div class="desc" style="margin-bottom:8px">${esc(e.it.d)}</div><button style="padding:5px 12px;font-size:13px" onclick="asignLab(${e.si},${e.i})">Asignar laboratorio</button></div>`).join(''):'<div class="card">Todos tus productos con fecha tienen laboratorio.</div>')}
  $('#main').innerHTML=h+fileCard}
+
+/* ===== Escáner de código de barras ===== */
+let BC='',scn=null;const BF=['ean_13','ean_8','upc_a','upc_e','code_128','code_39','itf'];
+function findLocal(c){for(const s of S.secs)for(const it of s.it)if(it.bc===c||it.c===c)return{s,it};return null}
+async function onScan(code){code=String(code).trim();BC=code;const s=$('#as');
+ const L=findLocal(code);
+ if(L){$('#ac').value=L.it.c;$('#ad').value=L.it.d;s.textContent='✓ Ya lo tienes en '+nm(L.s)+'. Puedes corregirlo.';return}
+ $('#ac').value='';$('#ad').value='';
+ if(CFG.proxy){s.textContent='Código '+code+' leído. Buscando en la página…';const j=await look(code);if(BC!==code)return;
+  if(j.found){$('#ad').value=String(j.name).toUpperCase();const k=j.code||j.sku||j.codigo;if(k)$('#ac').value=String(k);s.textContent=k?'✓ Encontrado. Puedes corregirlo.':'✓ Descripción encontrada. Escribe el código (SKU) del producto.';return}}
+ s.textContent='Código de barras '+code+' leído. Escribe el SKU y la descripción: la próxima vez se llenará solo.'}
+function loadZx(){return new Promise((ok,no)=>{if(window.ZXing)return ok();const e=document.createElement('script');e.src='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';e.onload=ok;e.onerror=no;document.head.appendChild(e)})}
+function scanClose(){if(scn){try{scn.stop()}catch(e){}scn=null}const o=$('#scn');if(o)o.hidden=true}
+async function scanOpen(){
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return uiAlert('Este navegador no permite usar la cámara. Escribe el código a mano.');
+ $('#scn').hidden=false;$('#scm').textContent='Apunta al código de barras';
+ try{
+  if('BarcodeDetector' in window){
+   const det=new BarcodeDetector({formats:BF}),st=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false}),v=$('#scv');
+   v.srcObject=st;await v.play();let tm2=0,busy=0;
+   scn={stop:()=>{clearInterval(tm2);st.getTracks().forEach(x=>x.stop());v.srcObject=null}};
+   tm2=setInterval(async()=>{if(busy)return;busy=1;try{const r=await det.detect(v);if(r.length){const c=r[0].rawValue;scanClose();onScan(c)}}catch(e){}busy=0},300)
+  }else{
+   await loadZx();const rd=new ZXing.BrowserMultiFormatReader();scn={stop:()=>rd.reset()};
+   rd.decodeFromConstraints({video:{facingMode:{ideal:'environment'}},audio:false},'scv',r=>{if(r){const c=r.getText();scanClose();onScan(c)}})
+  }
+ }catch(e){scanClose();uiAlert(e&&e.name==='NotAllowedError'?'Necesito permiso para usar la cámara. Actívalo en los ajustes del navegador.':'No pude abrir el escáner. Revisa la cámara y la conexión a internet, o escribe el código a mano.')}}
+/* ===== Alertas ===== */
+function alertasHtml(){let mes=0,vv=0,pe=0;
+ S.secs.forEach(s=>s.it.forEach(it=>{const d=md(it);if(d===null)return;if(d<0)vv++;else if(d===0)mes++;if(POL){const g=labOf(it);if(g&&g.m!=null&&d>=0&&d<=g.m)pe++}}));
+ const r=(n,x,g,c)=>n?`<button class="al ${c}" onclick="${g}"><b>${n}</b> ${x}<span>›</span></button>`:'';
+ const h=r(mes,mes==1?'producto vence este mes':'productos vencen este mes',"ui.mode='mes';go('ven')",'w')+r(vv,vv==1?'producto ya vencido':'productos ya vencidos',"ui.mode='mes';go('ven')",'n')+(POL?r(pe,pe==1?'producto toca sacar por política':'productos tocan sacar por política',"ui.pm='ya';go('pol')",'w'):'<button class="al" onclick="go(\'pol\')">Carga la política de devolución para ver cuáles sacar<span>›</span></button>');
+ return h?`<div class="card" style="padding:12px 12px 6px"><div class="desc" style="font-size:15px;margin:0 0 8px">Alertas</div>${h}</div>`:''}
 
 function start(){welcome()}
 function fade(){const m=$('#main');if(m.classList){m.classList.remove('fi');void m.offsetWidth;m.classList.add('fi')}}
