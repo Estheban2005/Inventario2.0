@@ -91,7 +91,7 @@ const DATA={"secs":[{"n":"FRENTILLO_P_A","t":"FRENTILLO P.A ESTHEBAN","it":[{"c"
 const KEY='inv_farmacia_v1',$=s=>document.querySelector(s);
 let S={secs:[]},CU=null,U=[];
 const ui={sec:0,wk:0,view:'inv',mode:'mes',f:'t',o:'o'};
-let warned=0;const save=()=>{try{localStorage.setItem('inv_data_'+CU.id,JSON.stringify(S))}catch(e){if(!warned++)uiAlert('No se pudo guardar en este navegador. Usa Más > Guardar copia para no perder tus datos.')}};
+let warned=0;const save=()=>{try{localStorage.setItem('inv_data_'+CU.id,JSON.stringify(S))}catch(e){if(!warned++)uiAlert('No se pudo guardar en este navegador. Usa Más > Guardar copia para no perder tus datos.')}syDirty()};
 try{navigator.storage?.persist?.()}catch(e){}
 const opt=(a,v)=>a.map(([k,x])=>`<option value="${k}" ${k==v?'selected':''}>${x}</option>`).join('');
 const ok=it=>it.w[ui.wk][0]!==null&&it.w[ui.wk][1]!==null;
@@ -109,7 +109,7 @@ const dcls=v=>v===null?'':v<0?'neg':v>0?'pos':'ok';
 const cur=i=>S.secs[ui.sec].it[i];
 
 function ctl(){$('#ctl').innerHTML=`<div class="bar"><select onchange="ui.sec=+this.value;list()">${S.secs.map((s,i)=>[i,esc(nm(s))]).map(([k,x])=>`<option value="${k}" ${k==ui.sec?'selected':''}>${x}</option>`).join('')}</select><select onchange="ui.wk=+this.value;list()">${opt([0,1,2,3].map(i=>[i,'Semana '+(i+1)]),ui.wk)}</select></div>`;
- $('#flt').innerHTML=`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="pri" style="flex:1;padding:14px" onclick="add()">Agregar producto</button><button class="pri" style="width:56px;padding:0;display:grid;place-items:center" onclick="scanOpen('auto')" aria-label="Escanear código de barras"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/><path d="M8 9v6M11 9v6M14 9v6M17 9v6"/></svg></button></div><div id="prg" class="top" style="margin-bottom:8px"></div><input id="q" type="search" placeholder="Buscar por código o nombre" oninput="list()"><div class="bar" style="margin:8px 0"><select onchange="ui.f=this.value;list()">${opt([['t','Todos'],['p','Pendientes'],['d','Con diferencia']],ui.f)}</select><select onchange="ui.o=this.value;list()">${opt([['o','Original'],['c','Código'],['n','Nombre'],['v','Vence']],ui.o)}</select></div>`}
+ $('#flt').innerHTML=`<div style="display:flex;gap:8px;margin-bottom:10px"><button class="pri" style="flex:1;padding:14px" onclick="add()">Agregar producto</button><button class="pri" style="width:56px;padding:0;display:grid;place-items:center" onclick="scanOpen('auto')" aria-label="Escanear código de barras"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/><path d="M8 9v6M11 9v6M14 9v6M17 9v6"/></svg></button></div><div id="prg" class="top" style="margin-bottom:8px"></div><div style="display:flex;gap:8px"><input id="q" type="search" placeholder="Buscar por código o nombre" oninput="list()" style="flex:1;min-width:0"><button class="pri" style="width:52px;padding:0;display:grid;place-items:center;flex:none" onclick="scanOpen('find')" aria-label="Buscar escaneando"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.4-4.4"/></svg></button></div><div class="bar" style="margin:8px 0"><select onchange="ui.f=this.value;list()">${opt([['t','Todos'],['p','Pendientes'],['d','Con diferencia']],ui.f)}</select><select onchange="ui.o=this.value;list()">${opt([['o','Original'],['c','Código'],['n','Nombre'],['v','Vence']],ui.o)}</select></div>`}
 const card=(it,i)=>{const[s,f]=it.w[ui.wk],v=df(it),d=md(it);return `<div id="k${i}" class="card ${d===null?'':d<=0?'cx':d<=7?'cw':''}"><div class="top"><span>${esc(it.c)}</span><span id="t${i}">${tag(it)}</span></div><div class="desc">${esc(it.d)}</div>${labLine(it)}
 <label class="lb">Vence<input type="month" value="${it.fv}" onchange="setFv(${i},this.value)"></label>
 <div class="row"><label>Sistema<input type="number" inputmode="numeric" value="${s??''}" onchange="setV(${i},0,this.value)"></label><label>Físico<input type="number" inputmode="numeric" value="${f??''}" onchange="setV(${i},1,this.value)"></label><div id="d${i}" class="diff ${dcls(v)}">${dtxt(v)}</div></div>
@@ -130,7 +130,8 @@ function add(){BC='';$('#ac').value='';$('#ad').value='';$('#as').textContent=CF
 function shut(){scanClose();$('#sh').hidden=true}
 function acIn(){clearTimeout(tm);const c=$('#ac').value.trim();if(c.length<3||!CFG.proxy)return;tm=setTimeout(()=>find(c),600)}
 async function find(c){const s=$('#as');s.textContent='Buscando en la página…';const j=await look(c);if($('#ac').value.trim()!==c)return;
- if(j.found){$('#ad').value=String(j.name).toUpperCase();s.textContent='✓ Encontrado en la página. Puedes corregirlo.'}
+ if(j.found){$('#ad').value=String(j.name).toUpperCase();s.textContent='✓ Encontrado en la página. Puedes corregirlo.';
+  if(esBarras(c)&&j.sku&&String(j.sku)!==c){BC=c;$('#ac').value=String(j.sku);s.textContent='✓ Encontrado. El código de barras se cambió por su SKU '+j.sku+'.'}}
  else s.textContent=j.err?'No pude conectar con la página. Escribe la descripción a mano.':'No encontré ese código en la página. Escribe la descripción a mano.'}
 async function saveNew(){const c=$('#ac').value.trim(),d=$('#ad').value.trim(),its0=S.secs[ui.sec].it;if(!c||!d)return uiAlert('Escribe el código y la descripción.');
  if(its0.some(i=>i.c===c)&&!await uiConfirm('Ese código ya está en esta sección. ¿Agregarlo igual?'))return;
@@ -152,8 +153,10 @@ function mas(){$('#flt').innerHTML='';$('#ctl').innerHTML='';
  $('#main').innerHTML=c('Importar inventario','Carga tu inventario desde un Excel, ODS o CSV con las columnas CODIGO, DESCRIPCION y F.V. Reemplaza el inventario actual.','<button class="pri" onclick="$(\'#imf\').click()">Importar desde Excel</button>')
  +c('Conexión con la página de la farmacia',CFG.proxy?'Conectada: al agregar un producto, la descripción se completa sola con el código (SKU).':'Aún no está conectada. Crea tu buscador gratis con la guía y pega su dirección aquí.','<button class="pri" onclick="cfgProxy()">'+(CFG.proxy?'Cambiar dirección':'Configurar')+'</button> '+(CFG.proxy?'<button onclick="testProxy()">Probar conexión</button>':''))
  +c('Política de devolución',POL?'Archivo cargado: '+esc(POL.name)+' · '+POL.g.length+' laboratorios.':'Aún no has cargado el archivo de política.','<button class="pri" onclick="$(\'#pf\').click()">'+(POL?'Cambiar archivo':'Cargar archivo')+'</button> <button onclick="go(\'pol\')">Ver devoluciones</button>')
+ +c('Códigos de barras','Si algún producto quedó guardado con su código de barras, se cambia por su SKU usando tu buscador. También se hace solo al exportar.','<button class="pri" onclick="arreglarCodigos()">Corregir códigos ahora</button>')
  +c('Productos por hoja','Cada hoja admite hasta '+LIM()+' productos. Al llenarse, el sistema crea la hoja siguiente automáticamente, y así salen las hojas al exportar e imprimir.','<button class="pri" onclick="setLim()">Cambiar límite</button>')
  +c('Exportar','Excel con tu formato exacto (horizontal, columnas y encabezado azul) o PDF listo para imprimir.','<button class="pri" onclick="exportXlsx()">Exportar Excel</button> <button class="pri" onclick="exportPdf()">Exportar PDF</button>')
+ +c('Respaldo en la nube',SY?'Activo. Tu inventario se guarda y se actualiza solo entre tus dispositivos.<br>'+(SY.msg?esc(SY.msg):'')+'<br>Tu código: <b style="letter-spacing:1px">'+esc(SY.code)+'</b>':'Guarda tu inventario en internet (cifrado) para verlo igual en el teléfono y en la computadora.','<button class="pri" onclick="'+(SY?'syRun(1)">Sincronizar ahora</button> <button onclick="syOff()">Desactivar</button>':'syOn()">Activar respaldo</button> <button onclick="syJoin()">Ya tengo un código</button>'))
  +c('Copia de seguridad','Guarda tu inventario en un archivo para no perderlo si borras los datos del navegador.','<button class="pri" onclick="backup()">Guardar copia</button> <button onclick="$(\'#rf\').click()">Restaurar copia</button><input id="rf" type="file" accept=".json,application/json" hidden onchange="restore(this.files[0])">')
  +c('Secciones','Agrega una sección nueva o elimina la que estás viendo.','<button onclick="newSec()">Nueva sección</button> '+(S.secs.length?'<button onclick="delSec()">Eliminar sección actual</button>':''))
  +c('Nueva semana','Vacía sistema y físico de una semana. No borra productos ni fechas.','<button onclick="clearWeek()">Limpiar semana</button>')
@@ -184,8 +187,8 @@ function pin(id){const u=U.find(x=>x.id==id);A(lg+`<h2>${esc(u.n)}</h2><p>Escrib
 async function login(id){const u=U.find(x=>x.id==id);if(await hs(id,$('#p1').value)===u.p)enter(id);else uiAlert('PIN incorrecto')}
 function forgot(id){const u=U.find(x=>x.id==id);A(lg+`<h2>Recuperar PIN</h2><p>${esc(u.q)}</p><input id="aa" placeholder="Tu respuesta">${pw('p1','Nuevo PIN')}<button class="pri" onclick="reset('${id}')">Cambiar PIN</button><button onclick="pin('${id}')">Volver</button>`)}
 async function reset(id){const u=U.find(x=>x.id==id),p=$('#p1').value.trim();if(await hs(id,$('#aa').value)!==u.a)return uiAlert('La respuesta no coincide.');if(!/^\d{4,6}$/.test(p))return uiAlert('El PIN debe tener de 4 a 6 números.');u.p=await hs(id,p);sv();uiAlert('PIN cambiado');pin(id)}
-function enter(id){CU=U.find(x=>x.id==id);S=ld('inv_data_'+id,{secs:[]});if(!S.secs)S={secs:[]};if(paginar())save();ui.sec=0;ui.wk=0;ui.view='inv';$('#auth').hidden=true;$('#app').hidden=false;hdr();render();fade()}
-function logout(){CU=null;S={secs:[]};welcome()}
+function enter(id){CU=U.find(x=>x.id==id);SY=ld('inv_sync_'+id,null);S=ld('inv_data_'+id,{secs:[]});if(!S.secs)S={secs:[]};if(paginar())save();setTimeout(()=>syRun(),400);ui.sec=0;ui.wk=0;ui.view='inv';$('#auth').hidden=true;$('#app').hidden=false;hdr();render();fade()}
+function logout(){CU=null;SY=null;S={secs:[]};welcome()}
 async function adminPin(){const n=await uiPrompt('Usuario a restablecer:\n'+U.map(u=>u.n).join(', '));const u=U.find(x=>x.n.toLowerCase()===(n||'').trim().toLowerCase());if(!u)return;const p=(await uiPrompt('Nuevo PIN (4 a 6 números)')||'').trim();if(!/^\d{4,6}$/.test(p))return uiAlert('PIN no válido.');u.p=await hs(u.id,p);sv();uiAlert('PIN restablecido para '+u.n)}
 function empty(){$('#ctl').innerHTML='';$('#flt').innerHTML='';$('#main').innerHTML='<div class="card"><div class="desc">Aún no tienes productos</div><p class="top">Importa tu inventario desde un Excel o crea una sección y agrega productos a mano.</p><button class="pri" onclick="$(\'#imf\').click()">Importar desde Excel</button> <button onclick="newSec()">Nueva sección</button></div>'}
 async function newSec(){const n=(await uiPrompt('Nombre de la sección')||'').replace(/[:\\\/?*\[\]]/g,'').trim();if(!n)return;S.secs.push({n:n.replace(/ /g,'_').toUpperCase().slice(0,31),t:n.toUpperCase(),it:[]});ui.sec=S.secs.length-1;save();go('inv')}
@@ -249,14 +252,14 @@ function quitaFoto(){if(CU.pf)delete CU.pf.f;sv();hdr();$('#pfo').textContent=CU
 const VM=[['mes','Este mes'],['3','3 meses'],['6','6 meses'],['7','7 meses'],['9','9 meses']];
 function ven(){$('#flt').innerHTML='';const m=ui.mode,N=m==='mes'?0:+m,r=[];
  $('#ctl').innerHTML='<div class="chips">'+VM.map(([k,x])=>`<button class="${k===m?'pri':''}" onclick="ui.mode='${k}';ven()">${x}</button>`).join('')+'</div>';
- S.secs.forEach(s=>s.it.forEach(it=>{const d=md(it);if(d!==null&&(m==='mes'?d<=0:d>=0&&d<=N))r.push({s,it,d})}));
+ S.secs.forEach((s,si)=>s.it.forEach((it,i)=>{const d=md(it);if(d!==null&&(m==='mes'?d<=0:d>=0&&d<=N))r.push({s,si,i,it,d})}));
  r.sort((a,b)=>a.d-b.d);
- $('#main').innerHTML=`<p class="top" style="margin:0 2px 10px">${r.length} producto${r.length==1?'':'s'} · ${m==='mes'?'vencen este mes o ya vencieron':'vencen en los próximos '+m+' meses'}</p>`+(r.length?r.map(({s,it,d})=>`<div class="card ${d<=0?'cx':'cw'}"><div class="top"><span>${esc(it.c)} · ${esc(nm(s))}</span><span class="tag ${d<=0?'n':'w'}">${lbl(it)}</span></div><div class="desc" style="margin-bottom:0">${esc(it.d)}</div></div>`).join(''):'<div class="card">No hay productos en este período.</div>')}
+ $('#main').innerHTML=`<p class="top" style="margin:0 2px 10px">${r.length} producto${r.length==1?'':'s'} · ${m==='mes'?'vencen este mes o ya vencieron':'vencen en los próximos '+m+' meses'}</p>`+(r.length?r.map(({s,si,i,it,d})=>`<div class="card ${d<=0?'cx':'cw'}"><div class="top"><span>${esc(it.c)} · ${esc(nm(s))}</span><span class="tag ${d<=0?'n':'w'}">${lbl(it)}</span></div><div class="desc" style="margin-bottom:8px">${esc(it.d)}</div><button class="pri" style="padding:5px 12px;font-size:13px" onclick="marcarDev(${si},${i})">${d<0?'Sacado':'Devuelto'}</button></div>`).join(''):'<div class="card">No hay productos en este período.</div>')}
 
 const CW=[1.9,1.5,7.25,1.5,1.59,1.24,1.22,1.59,1.24,1.22,1.59,1.24,1.22,1.59,1.24,1.22];
 const fvs=it=>it.fv?it.fv.slice(5)+'/'+it.fv.slice(2,4):'';
 const fd=(x,y)=>x===null||y===null?null:y===x?'✔':y>x?'+'+(y-x):y-x;
-const rowsOf=s=>s.it.map(it=>[it.c,it.d,fvs(it)+(it.st?'*':''),...it.w.flatMap(([x,y])=>[x,y,fd(x,y)])]);
+const rowsOf=s=>s.it.map(it=>[it.c,it.d,it.fv?fvs(it)+(it.st?'*':''):'NULL',...it.w.flatMap(([x,y])=>[x,y,fd(x,y)])]);
 function buildPrint(){const SW=CW.reduce((a,b)=>a+b,0),cg='<colgroup>'+CW.map(w=>`<col style="width:${(w/SW*100).toFixed(3)}%">`).join('')+'</colgroup>',e=v=>v==null?'':esc(v);
  return S.secs.map(s=>{
   const h0=`<tr><td class="n"></td><td></td><td class="t d">${esc(s.t)}</td><td class="t"></td>`+[1,2,3,4].map(n=>`<td class="t" colspan="3">SEMANA ${n}</td>`).join('')+'</tr>';
@@ -296,7 +299,7 @@ function pdfBlob(secs){
  let out='%PDF-1.4\n';const of=[];for(let i=1;i<ob.length;i++){of[i]=out.length;out+=`${i} 0 obj\n${ob[i]}\nendobj\n`}
  const xr=out.length;out+=`xref\n0 ${ob.length}\n0000000000 65535 f \n`+of.slice(1).map(x=>String(x).padStart(10,'0')+' 00000 n \n').join('')+`trailer\n<< /Size ${ob.length} /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`;
  return new Blob([Uint8Array.from(out,ch=>ch.charCodeAt(0))],{type:'application/pdf'})}
-function exportPdf(){if(!S.secs.length)return uiAlert('No hay datos para exportar.');if(paginar())save();
+async function exportPdf(){if(!S.secs.length)return uiAlert('No hay datos para exportar.');if(paginar())save();await arreglarCodigos(1);
  const a=document.createElement('a');a.href=URL.createObjectURL(pdfBlob(S.secs));a.download='INVENTARIO_'+CU.n.toUpperCase().replace(/[^A-Z0-9]+/g,'_')+'.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
  return uiAlert('Tu PDF se descargó en horizontal, una hoja por página.','ok')}
 window.onafterprint=()=>{const p=$('#pr');if(p)p.innerHTML=''};
@@ -338,9 +341,19 @@ function xl(secs){
  'xl/_rels/workbook.xml.rels':H+`<Relationships xmlns="${NS}package/2006/relationships">${sheets.map((_,i)=>`<Relationship Id="rId${i+1}" Type="${RT}worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="${RT}styles" Target="styles.xml"/></Relationships>`,
  'xl/styles.xml':H+`<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="${fonts.length}">${fonts.join('')}</fonts><fills count="${fills.length}">${fills.join('')}</fills><borders count="${BS.length}">${BS.join('')}</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="${XS.length}">${XS.join('')}</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`};
  sheets.forEach((s,i)=>F['xl/worksheets/sheet'+(i+1)+'.xml']=s.x);return zip(F)}
-function exportXlsx(){if(!S.secs.length)return uiAlert('No hay datos para exportar.');if(paginar())save();
+async function exportXlsx(){if(!S.secs.length)return uiAlert('No hay datos para exportar.');if(paginar())save();await arreglarCodigos(1);
  const a=document.createElement('a');a.href=URL.createObjectURL(xl(S.secs));a.download='INVENTARIO_'+CU.n.toUpperCase().replace(/[^A-Z0-9]+/g,'_')+'.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
  return uiAlert('Tu Excel se descargó con el mismo formato de tu inventario.','ok')}
+
+/* ===== Códigos de barras -> SKU ===== */
+const esBarras=c=>/^\d{8,14}$/.test(String(c).trim());const noRes=new Set();
+async function arreglarCodigos(silent){if(!CFG.proxy)return 0;
+ const L=[];S.secs.forEach(s=>s.it.forEach(it=>{if(esBarras(it.c)&&!noRes.has(it.c))L.push(it)}));if(!L.length)return 0;
+ toast('Cambiando códigos de barras por su SKU…',0);let n=0;
+ const q=L.slice();await Promise.all([0,1,2].map(async()=>{while(q.length){const it=q.shift(),c=it.c,j=await look(c);
+  if(j.found&&j.sku&&String(j.sku)!==c&&!esBarras(j.sku)){it.bc=it.bc||c;it.c=String(j.sku);n++}else noRes.add(c)}}));
+ if(n){save();if(ui.view==='inv')list()}toast(n?'✓ '+n+' código'+(n>1?'s':'')+' de barras cambiado'+(n>1?'s':'')+' por su SKU':'');
+ if(!silent)uiAlert(n?'Se cambiaron '+n+' códigos de barras por su SKU.':'No encontré códigos de barras para cambiar (o la página no los reconoció).',n?'ok':'info');return n}
 /* ===== Política de devolución ===== */
 const PKEY='inv_pol_v1';let POL=ld(PKEY,null);
 const nz=s=>String(s??'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z0-9& ]+/g,' ').replace(/\s+/g,' ').trim();
@@ -370,7 +383,19 @@ async function impPol(f){if(!f)return;if(!window.XLSX)return uiAlert('Para carga
   POL={name:f.name,ts:Date.now(),g};try{localStorage.setItem(PKEY,JSON.stringify(POL))}catch(e){uiAlert('No se pudo guardar la política en este navegador.')}
   render();uiAlert('Política cargada: '+g.length+' laboratorios.','ok')}catch(e){uiAlert('No pude leer ese archivo.')}}
 function labRes(t){const k=nz(t);if(!k||!POL)return null;return POL.g.find(g=>g.k===k)||POL.g.filter(g=>g.k.includes(k)||k.includes(g.k)).sort((a,b)=>b.k.length-a.k.length)[0]||null}
-function labAuto(d){const D=' '+nz(d)+' ';let b=null;POL.g.forEach(g=>{if(g.k.length>=4&&D.includes(' '+g.k+' ')&&(!b||g.k.length>b.k.length))b=g});return b}
+let ALS=ld('inv_alias_v1',{});
+const STOP=new Set('COCO MULTI NATURAL NATURALES ORIGINAL CLASICO CLASICA FRESH FRES ACTIVE POWER PLUS SPORT NEUTRO INTENSE COOL FORTE DIARIO SEMANAL KIDS BABY FAMILY FAMILIA SUPER ULTRA EXTRA MAXI MINI VITAL CARE LIFE'.split(' '));
+const UNIT=/^(\d+([.,]\d+)?(ML|G|GR|KG|L|CM|MM|M|MG|UN|U|X\d*)?|X\d+)$/;
+const toks=d=>nz(d).split(' ').filter(Boolean),sig=d=>toks(d).filter(x=>!UNIT.test(x)&&x.length>=2);
+function labAuto(d){const T=toks(d),D=' '+T.join(' ')+' ',S2=sig(d),tail=S2.slice(-3);
+ for(const x of T){const k=ALS[x];if(k){const g=POL.g.find(y=>y.k===k);if(g)return g}}
+ let b=null,bs=0;const up=(sc,g)=>{const gm=g.m!=null,bm=b&&b.m!=null;if(sc>bs||(sc===bs&&(gm>bm||(gm===bm&&g.k.length<b.k.length)))){b=g;bs=sc}};
+ POL.g.forEach(g=>{const w=g.k.split(' ');
+  if(g.k.length>=4&&D.includes(' '+g.k+' '))up(100+g.k.length,g);
+  if(g.k.length===3&&tail.includes(g.k))up(90,g);
+  if(w.length>1)for(let i=0;i<T.length-1;i++)if(T[i].length>=3&&T[i+1].length>=3&&w[0].startsWith(T[i])&&w[1].startsWith(T[i+1])&&(T[i]!==w[0]||T[i+1]!==w[1]))up(80+T[i].length+T[i+1].length,g);
+  tail.forEach(x=>{if(x.length>=4&&!STOP.has(x)&&w[0].length>x.length&&w[0].startsWith(x))up(60+x.length,g)})});
+ return b}
 const labOf=it=>{if(!POL||it.lab==='-')return null;return it.lab?labRes(it.lab):labAuto(it.d)};
 const labLine=it=>{if(!POL)return'';const g=labOf(it);return`<div class="top" style="margin:-6px 0 10px;justify-content:flex-start;gap:6px">Laboratorio: <b style="color:var(--navy)">${g?esc(g.n):'sin asignar'}</b>${g&&g.m!=null?`<span class="tag">${esc(g.t||g.m+' meses')}</span>`:''}</div>`};
 async function asignLab(si,i){const it=S.secs[si].it[i];
@@ -380,31 +405,154 @@ async function asignLab(si,i){const it=S.secs[si].it[i];
  if(!c.length)return uiAlert('No encontré ese laboratorio en la política cargada.');
  let g=c[0];if(c.length>1){if(c.length>12)return uiAlert('Hay '+c.length+' laboratorios con ese texto. Escribe más letras.');
   const n=parseInt(await uiPrompt('Escribe el número del laboratorio:\n'+c.map((x,j)=>(j+1)+'. '+x.n).join('\n')),10);if(!(n>=1&&n<=c.length))return;g=c[n-1]}
- it.lab=g.n;save();render()}
-const PM=[['ya','Toca sacar'],['prox','Próximo mes'],['venc','Vencidos'],['lab','Por laboratorio'],['sin','Sin laboratorio']];
+ it.lab=g.n;save();
+ const ab=sig(it.d).filter(x=>x.length>=3).slice(-1)[0];
+ if(ab){const o=[];S.secs.forEach(s=>s.it.forEach(x=>{if(x!==it&&toks(x.d).includes(ab)&&!x.lab){const y=labOf(x);if(!y||y.k!==g.k)o.push(x)}}));
+  if(o.length&&await uiConfirm('¿Usar «'+ab+'» como abreviatura de '+g.n+' en los otros '+o.length+' producto'+(o.length>1?'s':'')+' que la tienen?')){ALS[ab]=g.k;try{localStorage.setItem('inv_alias_v1',JSON.stringify(ALS))}catch(e){}}}
+ render()}
+const PM=[['ya','Toca sacar'],['prox','Próximo mes'],['venc','Vencidos'],['dev','Devueltos'],['lab','Por laboratorio'],['sin','Sin laboratorio']];
 const mtxt=n=>n+(n==1?' mes':' meses');
 function pstat(d,m){return d<0?['Vencido','n']:d<=m?['Toca sacar','n']:d<=m+1?['Próximo mes','w']:['Faltan '+mtxt(Math.ceil(d-m))+' para sacar','']}
 function pol(){$('#flt').innerHTML='';
  const fileCard=POL?`<div class="card"><div class="top"><span>Política: <b style="color:var(--navy)">${esc(POL.name)}</b></span><span>${POL.g.length} labs · ${new Date(POL.ts).toLocaleDateString('es')}</span></div><div class="act"><button onclick="$('#pf').click()">Cambiar archivo</button></div></div>`:'';
- if(!POL){$('#ctl').innerHTML='';$('#main').innerHTML='<div class="card"><div class="desc">Política de devolución</div><p class="top">Carga el Excel de políticas de devolución. El sistema cruza los laboratorios con tus productos y te dice cuáles toca sacar. Cuando actualicen la política, cargas el archivo nuevo y se reemplaza.</p><button class="pri" onclick="$(\'#pf\').click()">Cargar archivo de política</button></div>';return}
+ if(!POL){$('#ctl').innerHTML='';$('#main').innerHTML='<div class="card"><div class="desc">Política de devolución</div><p class="top">Carga el Excel de políticas de devolución. El sistema cruza los laboratorios con tus productos y te dice cuáles toca sacar. Cuando actualicen la política, cargas el archivo nuevo y se reemplaza.</p><button class="pri" onclick="$(\'#pf\').click()">Cargar archivo de política</button></div>'+(devAll().length?'<div class="desc" style="margin:16px 2px 6px;font-size:18px">Devueltos</div>'+devHtml():'');return}
  const m=ui.pm||'ya';
  $('#ctl').innerHTML='<div class="chips">'+PM.map(([k,x])=>`<button class="${k===m?'pri':''}" onclick="ui.pm='${k}';pol()">${x}</button>`).join('')+'</div>';
  const E=[],SIN=[];
  S.secs.forEach((s,si)=>s.it.forEach((it,i)=>{const g=labOf(it);if(!g){if(it.fv)SIN.push({s,si,it,i});return}if(!it.fv)return;E.push({s,si,it,i,g,d:md(it)})}));
  const q=$('#pq')?$('#pq').value:'';
- const row=(e,show)=>{const[l,c]=e.g.m!=null?pstat(e.d,e.g.m):[e.d<0?'Vencido':'Sin devolución por vencer','n'];return`<div class="card ${c==='n'?'cx':c==='w'?'cw':''}"><div class="top"><span>${esc(e.it.c)} · ${esc(nm(e.s))}</span><span class="tag ${c}">${l}</span></div><div class="desc" style="margin-bottom:6px">${esc(e.it.d)}</div><div class="top"><span>Vence ${lbl(e.it)}${show?'':' · '+esc(e.g.n)}</span><button style="padding:5px 12px;font-size:13px" onclick="asignLab(${e.si},${e.i})">Lab</button></div></div>`};
+ const row=(e,show)=>{const[l,c]=e.g.m!=null?pstat(e.d,e.g.m):[e.d<0?'Vencido':'Sin devolución por vencer','n'];return`<div class="card ${c==='n'?'cx':c==='w'?'cw':''}"><div class="top"><span>${esc(e.it.c)} · ${esc(nm(e.s))}</span><span class="tag ${c}">${l}</span></div><div class="desc" style="margin-bottom:6px">${esc(e.it.d)}</div><div class="top"><span>Vence ${lbl(e.it)}${show?'':' · '+esc(e.g.n)}</span><span><button style="padding:5px 12px;font-size:13px" onclick="asignLab(${e.si},${e.i})">Lab</button> <button class="pri" style="padding:5px 12px;font-size:13px" onclick="marcarDev(${e.si},${e.i})">${e.d<0?'Sacado':'Devuelto'}</button></span></div></div>`};
  const rule=g=>g.m!=null?`Acepta desde ${esc(g.t||mtxt(g.m))} antes de vencer`:'No acepta devolución por vencer';
  const ven=g=>g.v?'Vencido: acepta'+(g.p?' hasta '+esc(g.p):''):'Vencido: no acepta';
- const grp=(L,empty)=>{if(!L.length)return`<div class="card">${empty}</div>`;const B={};L.forEach(e=>(B[e.g.k]=B[e.g.k]||{g:e.g,L:[]}).L.push(e));
-  return Object.values(B).sort((a,b)=>a.g.n.localeCompare(b.g.n)).map(({g,L})=>`<div class="desc" style="margin:14px 2px 2px;font-size:18px">${esc(g.n)} <span class="tag">${L.length} producto${L.length>1?'s':''}</span></div><p class="top" style="margin:0 2px 8px;display:block">${rule(g)} · ${ven(g)}${g.o?'<br>'+esc(g.o):''}</p>`+L.sort((a,b)=>a.d-b.d).map(e=>row(e,1)).join('')).join('')};
+ const grp=(L,empty)=>{PLV=L;if(!L.length)return`<div class="card">${empty}</div>`;const B={};L.forEach(e=>(B[e.g.k]=B[e.g.k]||{g:e.g,L:[]}).L.push(e));
+  return(m!=='lab'&&L.length>1?'<div class="act" style="margin:8px 0"><button class="pri" onclick="expLista(\'xlsx\',\'*\')">Lista completa Excel</button><button class="pri" onclick="expLista(\'pdf\',\'*\')">Lista completa PDF</button></div>':'')+Object.values(B).sort((a,b)=>a.g.n.localeCompare(b.g.n)).map(({g,L})=>`<div class="desc" style="margin:14px 2px 2px;font-size:18px">${esc(g.n)} <span class="tag">${L.length} producto${L.length>1?'s':''}</span> <button style="padding:4px 10px;font-size:12px" onclick="expLista('xlsx','${g.k}')">Excel</button> <button style="padding:4px 10px;font-size:12px" onclick="expLista('pdf','${g.k}')">PDF</button></div><p class="top" style="margin:0 2px 8px;display:block">${rule(g)} · ${ven(g)}${g.o?'<br>'+esc(g.o):''}</p>`+L.sort((a,b)=>a.d-b.d).map(e=>row(e,1)).join('')).join('')};
  let h='';
  if(m==='ya'){const L=E.filter(e=>e.g.m!=null&&e.d>=0&&e.d<=e.g.m);h=`<p class="top" style="margin:0 2px 6px">${L.length} producto${L.length==1?'':'s'} para sacar ahora</p>`+grp(L,'No tienes productos dentro de la ventana de devolución.')}
  else if(m==='prox'){const L=E.filter(e=>e.g.m!=null&&e.d>e.g.m&&e.d<=e.g.m+1);h=`<p class="top" style="margin:0 2px 6px">${L.length} producto${L.length==1?'':'s'} que entran en ventana el próximo mes</p>`+grp(L,'Nada entra en ventana el próximo mes.')}
  else if(m==='venc'){const L=E.filter(e=>e.d<0);h=`<p class="top" style="margin:0 2px 6px">${L.length} producto${L.length==1?'':'s'} ya vencido${L.length==1?'':'s'}</p>`+grp(L,'No tienes productos vencidos con laboratorio asignado.')}
+ else if(m==='dev'){h=devHtml()}
  else if(m==='lab'){const qq=nz(q);const L=E.filter(e=>!qq||nz(e.g.n).includes(qq));h=`<input id="pq" type="search" placeholder="Buscar laboratorio" value="${esc(q)}" oninput="pol();const x=$('#pq');x.focus();x.setSelectionRange(x.value.length,x.value.length)" style="margin-bottom:8px">`+grp(L,'No hay productos con ese laboratorio.')}
  else{h=`<p class="top" style="margin:0 2px 6px">${SIN.length} producto${SIN.length==1?'':'s'} con fecha sin laboratorio. Toca «Lab» para asignarlo.</p>`+(SIN.length?SIN.map(e=>`<div class="card"><div class="top"><span>${esc(e.it.c)} · ${esc(nm(e.s))}</span><span class="tag">${lbl(e.it)}</span></div><div class="desc" style="margin-bottom:8px">${esc(e.it.d)}</div><button style="padding:5px 12px;font-size:13px" onclick="asignLab(${e.si},${e.i})">Asignar laboratorio</button></div>`).join(''):'<div class="card">Todos tus productos con fecha tienen laboratorio.</div>')}
  $('#main').innerHTML=h+fileCard}
 
+
+/* ===== Devuelto / sacado ===== */
+const fvIn=s=>{const m=String(s).trim().match(/^(\d{1,2})\s*[\/\-.]\s*(\d{2}|\d{4})$/);if(!m||+m[1]<1||+m[1]>12)return null;return(m[2].length==2?'20'+m[2]:m[2])+'-'+String(m[1]).padStart(2,'0')};
+const fvT=v=>v?v.slice(5)+'/'+v.slice(2,4):'NULL';
+const fecha=ts=>{const d=new Date(ts);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()};
+async function marcarDev(si,i){const it=S.secs[si].it[i],d=md(it),ve=d!==null&&d<0,f=it.w[ui.wk][1];
+ const q=await uiPrompt((ve?'Sacar producto vencido':'Devolver producto')+'\n'+it.d+'\nVence: '+lbl(it)+'\n\nCantidad que se saca (puedes dejarla vacía):',f!==null&&f>0?String(f):'');if(q===null)return;
+ const qs=q.trim();let qn=null;if(qs!==''){qn=parseInt(qs,10);if(!(qn>=0))return uiAlert('Cantidad no válida.')}
+ const nf=await uiPrompt('¿Queda producto de este código con otra fecha de vencimiento?\nEscribe mes/año (ej. 08/28). Déjala vacía si no queda con fecha (saldrá NULL).','');if(nf===null)return;
+ let fv='';if(nf.trim()!==''){fv=fvIn(nf);if(fv===null)return uiAlert('Fecha no válida. Usa mes/año, por ejemplo 08/28.')}
+ const g=POL?labOf(it):null;(it.dev=it.dev||[]).push({ts:Date.now(),fv:it.fv,q:qn,t:ve?'v':'d',l:g?g.n:''});
+ it.fv=fv;it.st=0;save();render();toast(ve?'✓ Marcado como sacado':'✓ Marcado como devuelto')}
+async function deshacerDev(si,i,ts){const it=S.secs[si].it[i],k=(it.dev||[]).findIndex(r=>r.ts===ts);if(k<0)return;
+ if(!await uiConfirm('¿Deshacer? El producto vuelve a tener la fecha '+fvT(it.dev[k].fv)+'.'))return;
+ it.fv=it.dev[k].fv||'';it.dev.splice(k,1);if(!it.dev.length)delete it.dev;save();render()}
+const devAll=()=>{const o=[];S.secs.forEach((s,si)=>s.it.forEach((it,i)=>(it.dev||[]).forEach(r=>o.push({s,si,i,it,r}))));return o.sort((a,b)=>b.r.ts-a.r.ts)};
+function devHtml(){const L=devAll();
+ return `<p class="top" style="margin:0 2px 6px">${L.length} registro${L.length==1?'':'s'} de productos devueltos o sacados</p>`+(L.length?`<div class="act" style="margin-bottom:10px"><button onclick="expDev('xlsx')">Exportar Excel</button><button onclick="expDev('pdf')">Exportar PDF</button></div>`+L.map(({s,si,i,it,r})=>`<div class="card"><div class="top"><span>${esc(it.c)} · ${esc(nm(s))}</span><span class="tag ${r.t==='v'?'n':''}">${r.t==='v'?'Vencido sacado':'Devuelto'}</span></div><div class="desc" style="margin-bottom:6px">${esc(it.d)}</div><div class="top"><span>Vencía ${fvT(r.fv)} · Cant. ${r.q===null||r.q===undefined?'—':r.q} · ${fecha(r.ts)}${r.l?' · '+esc(r.l):''}</span><button style="padding:5px 12px;font-size:13px" onclick="deshacerDev(${si},${i},${r.ts})">Deshacer</button></div></div>`).join(''):'<div class="card">Aún no has marcado productos como devueltos o sacados.</div>')}
+
+/* ===== Listas para entregar (Excel / PDF) ===== */
+function dl(b,n){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+function xlTabla(o){const X=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),cn=i=>String.fromCharCode(65+i),n=o.head.length;
+ const cell=(r,c,v,s)=>{const a=cn(c)+r;if(v===null||v===undefined||v==='')return`<c r="${a}" s="${s}"/>`;return typeof v==='number'?`<c r="${a}" s="${s}"><v>${v}</v></c>`:`<c r="${a}" s="${s}" t="inlineStr"><is><t xml:space="preserve">${X(v)}</t></is></c>`};
+ const rows=[`<row r="1" ht="24" customHeight="1">${cell(1,0,o.t,4)}</row>`,`<row r="2" ht="16" customHeight="1">${cell(2,0,o.sub,5)}</row>`,`<row r="4" ht="20" customHeight="1">${o.head.map((h,c)=>cell(4,c,h,1)).join('')}</row>`];
+ o.rows.forEach((r,i)=>rows.push(`<row r="${i+5}" ht="18" customHeight="1">${r.map((v,c)=>cell(i+5,c,/^\d+$/.test(String(v))&&c===o.num?Number(v):v,o.al[c]==='l'?2:3)).join('')}</row>`));
+ const H='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',NS='http://schemas.openxmlformats.org/',RT=NS+'officeDocument/2006/relationships/',CT='application/vnd.openxmlformats-officedocument.spreadsheetml.';
+ const B='<border><left style="thin"><color rgb="FF000000"/></left><right style="thin"><color rgb="FF000000"/></right><top style="thin"><color rgb="FF000000"/></top><bottom style="thin"><color rgb="FF000000"/></bottom><diagonal/></border>';
+ const xf=(f,fl,b,h)=>`<xf numFmtId="0" fontId="${f}" fillId="${fl}" borderId="${b}" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="${h}" vertical="center"/></xf>`;
+ const F={'[Content_Types].xml':H+`<Types xmlns="${NS}package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="${CT}sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="${CT}worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="${CT}styles+xml"/></Types>`,
+ '_rels/.rels':H+`<Relationships xmlns="${NS}package/2006/relationships"><Relationship Id="rId1" Type="${RT}officeDocument" Target="xl/workbook.xml"/></Relationships>`,
+ 'xl/workbook.xml':H+`<workbook xmlns="${NS}spreadsheetml/2006/main" xmlns:r="${RT.slice(0,-1)}"><sheets><sheet name="LISTA" sheetId="1" r:id="rId1"/></sheets></workbook>`,
+ 'xl/_rels/workbook.xml.rels':H+`<Relationships xmlns="${NS}package/2006/relationships"><Relationship Id="rId1" Type="${RT}worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="${RT}styles" Target="styles.xml"/></Relationships>`,
+ 'xl/styles.xml':H+`<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="4"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="15"/><name val="Calibri"/></font><font><i/><sz val="10"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFB4C6E7"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>${B}</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="6">${xf(0,0,0,'general')}${xf(1,2,1,'center')}${xf(0,0,1,'left')}${xf(0,0,1,'center')}${xf(2,0,0,'left')}${xf(3,0,0,'left')}</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`,
+ 'xl/worksheets/sheet1.xml':H+`<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols>${o.w.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('')}</cols><sheetData>${rows.join('')}</sheetData><pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.2" footer="0.2"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/></worksheet>`};
+ return zip(F)}
+function pdfDoc(pages,PW,PH){const ob=[];ob[1]='<< /Type /Catalog /Pages 2 0 R >>';
+ ob[2]=`<< /Type /Pages /Kids [${pages.map((_,i)=>(5+i*2)+' 0 R').join(' ')}] /Count ${pages.length} >>`;
+ ob[3]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';ob[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+ pages.forEach((c,i)=>{const q=5+i*2;ob[q]=`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${q+1} 0 R >>`;ob[q+1]=`<< /Length ${c.length} >>\nstream\n${c}\nendstream`});
+ let out='%PDF-1.4\n';const of=[];for(let i=1;i<ob.length;i++){of[i]=out.length;out+=`${i} 0 obj\n${ob[i]}\nendobj\n`}
+ const xr=out.length;out+=`xref\n0 ${ob.length}\n0000000000 65535 f \n`+of.slice(1).map(x=>String(x).padStart(10,'0')+' 00000 n \n').join('')+`trailer\n<< /Size ${ob.length} /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`;
+ return new Blob([Uint8Array.from(out,ch=>ch.charCodeAt(0))],{type:'application/pdf'})}
+function pdfTabla(o){const PW=842,PH=595,MG=30,rh=18,fs=10,f=v=>v.toFixed(2),n=o.head.length,SW=o.w.reduce((a,b)=>a+b,0),X=[MG];o.w.forEach(w=>X.push(X[X.length-1]+w/SW*(PW-2*MG)));
+ const per=Math.floor((PH-2*MG-52-rh)/rh),ch=[];for(let i=0;i<Math.max(o.rows.length,1);i+=per)ch.push(o.rows.slice(i,i+per));
+ return pdfDoc(ch.map((rs,pi)=>{const op=['0 G 0 g'],top=PH-MG-52,H=top-rh;
+  const T=(s,c,y,b,al)=>{s=String(s??'');if(!s)return;const x=X[c],wd=X[c+1]-x,w0=tw(s,fs,b),av=wd-6,sc=w0>av?av/w0*100:100,ww=w0*sc/100,tx=al==='l'?x+3:x+(wd-ww)/2;op.push(`BT /${b?'F2':'F1'} ${f(fs)} Tf ${sc.toFixed(1)} Tz ${f(tx)} ${f(y+5)} Td (${pe(s)}) Tj ET`)};
+  op.push(`BT /F2 15 Tf 100 Tz ${MG} ${PH-MG-14} Td (${pe(o.t)}) Tj ET`);
+  op.push(`BT /F1 10 Tf 100 Tz ${MG} ${PH-MG-32} Td (${pe(o.sub+(ch.length>1?'  -  Pagina '+(pi+1)+' de '+ch.length:''))}) Tj ET`);
+  op.push(`0.706 0.776 0.906 rg ${f(MG)} ${f(H)} ${f(PW-2*MG)} ${f(rh)} re f 0 g`);
+  o.head.forEach((h,c)=>T(h,c,H,1,'c'));rs.forEach((r,i)=>r.forEach((v,c)=>T(v,c,H-(i+1)*rh,0,o.al[c])));
+  const nr=rs.length+1;op.push('0.5 w');for(let i=0;i<=nr;i++){const y=top-i*rh;op.push(`${f(MG)} ${f(y)} m ${f(PW-MG)} ${f(y)} l S`)}
+  for(let c=0;c<=n;c++)op.push(`${f(X[c])} ${f(top)} m ${f(X[c])} ${f(top-nr*rh)} l S`);
+  return op.join('\n')}),PW,PH)}
+const subL=()=>'Farmacia SAAS · '+CU.n+' · '+fecha(Date.now());
+const flat=s=>String(s).replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'').toUpperCase()||'LISTA';
+let PLV=[];
+function expLista(fmt,k){const L=k==='*'?PLV:PLV.filter(e=>e.g.k===k);if(!L.length)return uiAlert('No hay productos para exportar.');
+ const todo=k==='*',lab=todo?'TODOS LOS LABORATORIOS':L[0].g.n,sorted=L.slice().sort((a,b)=>todo?a.g.n.localeCompare(b.g.n)||a.d-b.d:a.d-b.d);
+ const rows=sorted.map(e=>{const f=e.it.w[ui.wk][1];return[...(todo?[e.g.n]:[]),e.it.c,e.it.d,fvT(e.it.fv),f!==null&&f>0?f:'',e.d<0?'VENCIDO':'POR VENCER']});
+ const head=[...(todo?['LABORATORIO']:[]),'CODIGO','DESCRIPCION','F.V','CANTIDAD','MOTIVO'],al=head.map(h=>h==='LABORATORIO'||h==='DESCRIPCION'?'l':'c'),w=head.map(h=>({LABORATORIO:26,CODIGO:12,DESCRIPCION:56,'F.V':10,CANTIDAD:11,MOTIVO:14})[h]);
+ const o={t:'LISTA DE DEVOLUCION - '+lab,sub:subL()+' · '+rows.length+' producto'+(rows.length>1?'s':''),head,rows,al,w,num:todo?1:0};
+ const nombre='DEVOLUCION_'+flat(lab)+'.'+fmt;dl(fmt==='pdf'?pdfTabla(o):xlTabla(o),nombre);toast('✓ Lista descargada')}
+function expDev(fmt){const L=devAll();if(!L.length)return uiAlert('No hay registros para exportar.');
+ const rows=L.map(({it,r})=>[fecha(r.ts),r.l||'',it.c,it.d,fvT(r.fv),r.q===null||r.q===undefined?'':r.q,r.t==='v'?'VENCIDO SACADO':'DEVUELTO']);
+ const head=['FECHA','LABORATORIO','CODIGO','DESCRIPCION','F.V','CANTIDAD','TIPO'],al=['c','l','c','l','c','c','c'],w=[12,24,12,50,10,10,18];
+ const o={t:'PRODUCTOS DEVUELTOS O SACADOS',sub:subL()+' · '+rows.length+' registro'+(rows.length>1?'s':''),head,rows,al,w,num:2};
+ dl(fmt==='pdf'?pdfTabla(o):xlTabla(o),'DEVUELTOS_'+fecha(Date.now()).replace(/\//g,'-')+'.'+fmt)}
+
+/* ===== Respaldo en la nube (cifrado en este dispositivo) ===== */
+let SY=null,syT=0,syBusy=0;
+const syS=()=>{try{localStorage.setItem('inv_sync_'+CU.id,JSON.stringify(SY))}catch(e){}};
+const syUrl=id=>{try{return new URL(CFG.proxy).origin+'/sync/'+id}catch(e){return null}};
+const hx=u=>[...u].map(x=>x.toString(16).padStart(2,'0')).join('');
+const b64=u=>{let s='';for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function sy1(b,fn){const r=new Response(b),s=r.body.pipeThrough(new fn('gzip'));return new Uint8Array(await new Response(s).arrayBuffer())}
+async function syKeys(code){const e=new TextEncoder(),h=await crypto.subtle.digest('SHA-256',e.encode('id:'+code)),b=await crypto.subtle.importKey('raw',e.encode(code),'PBKDF2',false,['deriveKey']);
+ return{id:hx(new Uint8Array(h)),k:await crypto.subtle.deriveKey({name:'PBKDF2',salt:e.encode('saas-inv-v1'),iterations:100000,hash:'SHA-256'},b,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}}
+async function syEnc(code,txt){const K=await syKeys(code);let u=new TextEncoder().encode(txt),z='p';if(window.CompressionStream){u=await sy1(u,CompressionStream);z='z'}
+ const iv=crypto.getRandomValues(new Uint8Array(12)),ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},K.k,u)),o=new Uint8Array(12+ct.length);o.set(iv);o.set(ct,12);return z+b64(o)}
+async function syDec(code,s){const K=await syKeys(code),z=s[0],o=unb64(s.slice(1));let u=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:o.slice(0,12)},K.k,o.slice(12)));if(z==='z')u=await sy1(u,DecompressionStream);return new TextDecoder().decode(u)}
+const syNew=()=>{const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=crypto.getRandomValues(new Uint8Array(16));let s='';r.forEach((x,i)=>{s+=a[x%32];if(i%4==3&&i<15)s+='-'});return s};
+function syDirty(){if(!SY||!CU)return;SY.dirty=1;syS();clearTimeout(syT);syT=setTimeout(()=>syRun(),4000)}
+function syMerge(a,b){const o={secs:(a.secs||[]).map(s=>({...s,it:s.it.map(i=>({...i}))}))};
+ (b.secs||[]).forEach(sb=>{const sa=o.secs.find(x=>x.n===sb.n);if(!sa){o.secs.push(JSON.parse(JSON.stringify(sb)));return}
+  const m=new Map();sa.it.forEach(i=>m.set(i.c,i));
+  sb.it.forEach(ib=>{const ia=m.get(ib.c);if(!ia){sa.it.push(JSON.parse(JSON.stringify(ib)));return}
+   ia.w=ia.w.map((p,k)=>[p[0]??ib.w[k][0],p[1]??ib.w[k][1]]);if(!ia.fv&&ib.fv)ia.fv=ib.fv;if(!ia.bc&&ib.bc)ia.bc=ib.bc;
+   if(ib.dev){const ts=new Set((ia.dev||[]).map(r=>r.ts));ia.dev=[...(ia.dev||[]),...ib.dev.filter(r=>!ts.has(r.ts))]}})});
+ return o}
+function syApply(o,merge){S=merge?syMerge(S,o.S):o.S;if(!S.secs)S={secs:[]};
+ if(o.POL&&(!POL||o.POL.ts>=POL.ts)){POL=o.POL;try{localStorage.setItem(PKEY,JSON.stringify(POL))}catch(e){}}
+ if(o.ALS){ALS={...o.ALS,...ALS};try{localStorage.setItem('inv_alias_v1',JSON.stringify(ALS))}catch(e){}}
+ try{localStorage.setItem('inv_data_'+CU.id,JSON.stringify(S))}catch(e){}paginar();}
+async function syReq(m,body){const K=await syKeys(SY.code),u=syUrl(K.id);if(!u)throw 0;const r=await fetch(u,{method:m,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});const j=await r.json();j.status=r.status;return j}
+async function syRun(manual,again){if(!SY||!CU||!CFG.proxy||syBusy||SY.uid!==CU.id)return;syBusy=1;
+ try{let r=await syReq('GET');if(r.status!==200)throw 0;
+  if(r.v>SY.v&&r.data){const o=JSON.parse(await syDec(SY.code,r.data));
+   if(SY.dirty){syApply(o,true)}else{syApply(o,false);SY.dirty=0}
+   SY.v=r.v;syS();render()}
+  if(SY.dirty){const d=await syEnc(SY.code,JSON.stringify({S,POL,ALS})),w=await syReq('PUT',{v:SY.v,data:d});
+   if(w.status===200){SY.v=w.v;SY.dirty=0}else if(w.status===409){syBusy=0;if(!again)return syRun(manual,1);throw 0}else throw 0}
+  SY.msg='Última sincronización: '+new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});SY.err=0;syS();
+  if(manual){toast('✓ Sincronizado');if(ui.view==='mas')render()}
+ }catch(e){SY.err=1;SY.msg='Sin conexión: se sincroniza al volver internet.';syS();if(manual)toast('No se pudo sincronizar')}
+ syBusy=0}
+async function syOn(){if(!CFG.proxy)return uiAlert('Primero conecta tu buscador en Más > Conexión. El respaldo usa esa misma dirección.');
+ SY={uid:CU.id,code:syNew(),v:0,dirty:1};syS();await syRun(1);
+ if(SY.err){const m=SY.msg;SY=null;try{localStorage.removeItem('inv_sync_'+CU.id)}catch(e){}return uiAlert('No se pudo activar. Revisa que el buscador tenga la base D1 (guía). '+m)}
+ await uiAlert('Respaldo activado.\n\nTu código es:\n'+SY.code+'\n\nGuárdalo bien. En tu otro dispositivo entra a Más > Respaldo en la nube > «Ya tengo un código» y escríbelo.');render()}
+async function syJoin(){if(!CFG.proxy)return uiAlert('Primero conecta tu buscador en Más > Conexión (la misma dirección que usas en el otro dispositivo).');
+ const c=((await uiPrompt('Escribe el código del respaldo (ej. ABCD-EFGH-JKLM-NPQR):',''))||'').trim().toUpperCase();if(!c)return;
+ SY={uid:CU.id,code:c,v:0,dirty:0};
+ try{const r=await syReq('GET');if(r.status!==200||!r.data){SY=null;return uiAlert('No hay ningún respaldo con ese código.')}
+  const o=JSON.parse(await syDec(c,r.data));syApply(o,true);SY.v=r.v;SY.dirty=1;syS();await syRun(1);toast('✓ Inventario descargado');ui.sec=0;render()}
+ catch(e){SY=null;uiAlert('El código no es correcto o no hay conexión.')}}
+async function syOff(){if(!await uiConfirm('¿Desactivar el respaldo en este dispositivo? Tu inventario aquí no se borra, y el respaldo en la nube queda guardado.'))return;SY=null;try{localStorage.removeItem('inv_sync_'+CU.id)}catch(e){}render()}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syRun()});setInterval(()=>{if(!document.hidden)syRun()},60000);
 /* ===== Límite de productos por hoja ===== */
 const LIM=()=>{const n=parseInt(CFG&&CFG.lim,10);return n>=10&&n<=60?n:32};
 const sbase=n=>n.replace(/_\(?\d+\)?$/,'');
@@ -432,7 +580,7 @@ function scanClose(){if(scn){try{scn.stop()}catch(e){}scn=null}const o=$('#scn')
 let scanMode='sheet';
 async function scanOpen(m){scanMode=m||'sheet';
  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return uiAlert('Este navegador no permite usar la cámara. Escribe el código a mano.');
- $('#scn').hidden=false;$('#scm').textContent='Apunta al código de barras';
+ $('#scn').hidden=false;$('#scm').textContent=scanMode==='find'?'Escanea el producto para buscarlo en tu inventario':'Apunta al código de barras';
  try{
   if('BarcodeDetector' in window){
    const det=new BarcodeDetector({formats:BF}),st=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false}),v=$('#scv');
@@ -448,7 +596,12 @@ async function scanOpen(m){scanMode=m||'sheet';
 let tt=0;function toast(m,ms){const e=$('#toast');if(!e)return;clearTimeout(tt);if(!m){e.classList.remove('on');return}e.textContent=m;e.classList.add('on');if(ms!==0)tt=setTimeout(()=>e.classList.remove('on'),ms||2600)}
 function flash(i){const e=$('#k'+i);if(e){e.scrollIntoView({block:'center'});e.classList.add('fl');setTimeout(()=>e.classList.remove('fl'),2500)}}
 function goItem(L,msg){ui.sec=S.secs.indexOf(L.s);ui.f='t';ui.o='o';ctl();list();flash(L.s.it.indexOf(L.it));toast(msg)}
-const scanDone=c=>scanMode==='auto'?autoScan(c):onScan(c);
+const scanDone=c=>scanMode==='auto'?autoScan(c):scanMode==='find'?findScan(c):onScan(c);
+
+async function findScan(code){code=String(code).trim();let L=findLocal(code);
+ if(!L&&CFG.proxy){toast('Código leído. Buscando…',0);const j=await look(code);if(j.found&&j.sku){L=findLocal(String(j.sku));if(L&&String(j.sku)!==code){L.it.bc=L.it.bc||code;save()}}}
+ if(L)return goItem(L,nm(L.s)+' · '+L.it.d.slice(0,34));
+ toast('');uiAlert('Este producto no está en tu inventario.')}
 async function autoScan(code){code=String(code).trim();
  const L=findLocal(code);if(L)return goItem(L,'Ya lo tienes en '+nm(L.s));
  toast('Código leído. Buscando producto…',0);
