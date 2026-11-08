@@ -180,7 +180,7 @@ function mas(){if(RO)return masRO();$('#flt').innerHTML='';$('#ctl').innerHTML='
  +c('Exportar','Excel con tu formato exacto (horizontal, columnas y encabezado azul) o PDF listo para imprimir.','<button class="pri" onclick="exportXlsx()">Exportar Excel</button> <button class="pri" onclick="exportPdf()">Exportar PDF</button>')
  +c('Sonido al escanear','Un pitido corto y una vibración cuando el escáner lee un código.','<button class="'+(CFG.snd!==0?'pri':'')+'" onclick="setSnd(1)">Activado</button> <button class="'+(CFG.snd===0?'pri':'')+'" onclick="setSnd(0)">Desactivado</button>')
  +c('Apariencia','Elige cómo se ve la app. También puedes cambiarlo con el botón del sol o la luna arriba.','<button class="'+(thM()==='auto'?'pri':'')+'" onclick="setTh(\'auto\')">Automático</button> <button class="'+(thM()==='light'?'pri':'')+'" onclick="setTh(\'light\')">Claro</button> <button class="'+(thM()==='dark'?'pri':'')+'" onclick="setTh(\'dark\')">Oscuro</button>')
- +c('Fotos de productos','Busca en la página de la farmacia la foto de cada producto y la muestra en su tarjeta. Los productos nuevos la traen solos.','<button class="pri" onclick="fotosAll()">Buscar fotos</button>')
+ +c('Fotos de productos','Busca en la página de la farmacia la foto de cada producto y la muestra en su tarjeta. Si la página trae primero una imagen gris, usa la siguiente. "Actualizar todas" vuelve a revisar también las que ya tenías.','<button class="pri" onclick="fotosAll()">Buscar fotos</button> <button onclick="fotosAll(1)">Actualizar todas</button>')
  +(WS?cloudCard(c):c('Espacio de la farmacia (nube)','Conecta a todo el equipo: cada persona con su usuario y la administración ve todos los inventarios. Se actualiza solo en todos los dispositivos.',(CU.adm?'<button class="pri" onclick="crearWs()">Crear espacio</button> ':'')+'<button onclick="joinWs()">Tengo un código</button>')+c('Respaldo en la nube',SY?'<span>Activo. Tu inventario se guarda y se actualiza solo entre tus dispositivos.<br>'+(SY.msg?esc(SY.msg):'')+'<br>Tu código: <b style="letter-spacing:1px">'+esc(SY.code)+'</b></span>':'Guarda tu inventario en internet (cifrado) para verlo igual en el teléfono y en la computadora.','<button class="pri" onclick="'+(SY?'syRun(1)">Sincronizar ahora</button> <button onclick="syOff()">Desactivar</button>':'syOn()">Activar respaldo</button> <button onclick="syJoin()">Ya tengo un código</button>')))
  +c('Copia de seguridad','Guarda tu inventario en un archivo para no perderlo si borras los datos del navegador.','<button class="pri" onclick="backup()">Guardar copia</button> <button onclick="$(\'#rf\').click()">Restaurar copia</button><input id="rf" type="file" accept=".json,application/json" hidden onchange="restore(this.files[0])">')
  +c('Secciones','Agrega una sección nueva, cambia el nombre de la que estás viendo o elimínala.','<button onclick="newSec()">Nueva sección</button> '+(S.secs.length?'<button onclick="renameSec()">Renombrar sección actual</button> <button onclick="delSec()">Eliminar sección actual</button>':''))
@@ -610,12 +610,12 @@ function lb(u,d){const e=document.createElement('div');e.id='lb';e.innerHTML='<i
 const verFoto=i=>{const it=cur(i);if(it.im)lb(it.im,it.d)};
 function apShow(u){const e=$('#ap');if(!e)return;if(u){e.src=u;e.hidden=false;e.onerror=()=>{e.hidden=true}}else e.hidden=true}
 let FT=0;
-async function fotosAll(){if(!CFG.proxy)return uiAlert('Primero conecta tu buscador en Más > Conexión.');
- const L=[];S.secs.forEach(s=>s.it.forEach(it=>{if(it.im===undefined)L.push(it)}));
+async function fotosAll(todas){if(!CFG.proxy)return uiAlert('Primero conecta tu buscador en Más > Conexión.');
+ const L=[];S.secs.forEach(s=>s.it.forEach(it=>{if(todas||it.im===undefined)L.push(it)}));
  if(!L.length)return uiAlert('Todos tus productos ya tienen su foto (o la página no tiene foto para ellos).');
  if(FT)return;if(!await uiConfirm('Voy a buscar la foto de '+L.length+' productos en la página. Puede tardar unos minutos; puedes seguir usando la app. ¿Empezar?'))return;
  FT=1;let n=0,ok=0,err=0,k=0;const run=async()=>{while(k<L.length&&err<8){const it=L[k++],j=await look(it.c);n++;
-   if(j.err){err++;continue}if(j.found&&j.img){it.im=j.img;ok++}else it.im='';
+   if(j.err){err++;continue}if(j.found&&j.img){it.im=j.img;ok++}else if(!todas)it.im='';
    if(n%15==0){save();toast('Buscando fotos… '+n+' de '+L.length,0)}}};
  await Promise.all([run(),run(),run()]);FT=0;save();toast('');if(ui.view==='inv')list();if(ui.view==='mas')render();
  uiAlert(err>=8?'Se detuvo por problemas de conexión. Lo que se alcanzó a buscar quedó guardado; puedes repetirlo.':'Listo: '+ok+' fotos encontradas de '+L.length+' productos.')}
@@ -666,7 +666,7 @@ async function syRunC(manual,again){if(!SY||!CU||!CU.tok||RO||syBusy||SY.uid!==C
   if(manual){toast('✓ Sincronizado');if(ui.view==='mas')render()}
  }catch(e){SY.err=1;SY.msg='No se pudo sincronizar ('+(e&&e.name==='AbortError'?'tiempo agotado':e&&e.message&&e.message!=='0'?e.message:'sin conexión o error del servidor')+'). Se reintenta solo.';syS();if(manual){toast('No se pudo sincronizar');if(ui.view==='mas')render()}}
  syBusy=0}
-const APPV='v14';
+const APPV='v14.1';
 function rqInfo(){return{v:APPV,view:ui.view,th:document.documentElement.getAttribute('data-th')||'auto',on:navigator.onLine,sw:innerWidth+'x'+innerHeight,ua:(navigator.userAgent||'').slice(0,140)}}
 let rqBusy=0;async function rqSend(){if(rqBusy||!WS||!CU||!CU.tok||RO)return 0;const q=ld('inv_rq',[]);if(!q.length)return 0;rqBusy=1;let n=0;
  try{for(const x of q.slice()){const r=await cl('rep',{uid:CU.id,tok:CU.tok,id:x.id,txt:x.txt,ts:x.ts,ctx:x.ctx});if(r.ok||r.err==='limite'){lsw('inv_rq',ld('inv_rq',[]).filter(y=>y.id!==x.id));if(r.ok)n++}else break}}catch(e){}rqBusy=0;return n}
