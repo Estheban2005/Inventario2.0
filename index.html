@@ -102,8 +102,14 @@ html[data-th=dark] .card{box-shadow:none}
 .pb{height:8px;border-radius:99px;background:var(--soft);overflow:hidden;margin:6px 0 12px}.pb i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--g1),var(--g2))}
 .bd .ic{position:relative}.bd .ic::after{content:'';position:absolute;top:-1px;right:2px;width:10px;height:10px;border-radius:50%;background:#e5484d;border:2px solid var(--sf)}
 .rpt{border-top:1px solid var(--line);padding:10px 0}.rpt p{margin:4px 0 6px;color:var(--ink);white-space:pre-wrap;word-break:break-word;font-size:14px}.rpt small{color:var(--mut);font-size:12px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2fae3a;margin-right:5px}
+.chr{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:10px 12px;margin-bottom:8px;color:var(--ink)}.chr .av{width:46px;height:46px;font-size:18px}.chr .tx{flex:1;min-width:0}.chr b{display:block;color:var(--navy)}.chr small{display:block;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}.chr .rt{text-align:right;font-size:12px;color:var(--mut);display:flex;flex-direction:column;gap:4px;align-items:flex-end}.nb{background:#e5484d;color:#fff;border-radius:10px;min-width:20px;padding:1px 6px;font-size:12px;font-weight:700;text-align:center}
+.cvh{display:flex;align-items:center;gap:10px;margin-bottom:6px}.cvh .av{width:42px;height:42px}.cvh b{display:block;color:var(--navy)}.cvh small{color:var(--mut);font-size:12px}
+.mg{display:flex;margin:5px 0}.mg.me{justify-content:flex-end}.bb{max-width:82%;padding:8px 12px 5px;border-radius:18px 18px 18px 6px;background:var(--soft);color:var(--ink);font-size:15px;line-height:1.35;word-break:break-word}.me .bb{background:var(--g1);color:#fff;border-radius:18px 18px 6px 18px}.sn{display:block;font-size:12px;font-weight:700;color:var(--g2);margin-bottom:1px}.mt{display:block;text-align:right;font-size:11px;opacity:.75;margin-top:2px}.tk{letter-spacing:-2px;margin-left:4px}.tk.r{color:#b8f0ff;opacity:1}.dsep,.sysm{text-align:center;color:var(--mut);font-size:12px;margin:12px 0 6px}
+.cinb{position:fixed;left:0;right:0;bottom:0;z-index:12;background:var(--sf);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:flex-end}.cinb textarea{flex:1;resize:none;max-height:110px;padding:10px 14px;border:1.5px solid var(--line);border-radius:20px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px;outline:0}.cinb button{width:44px;height:44px;border-radius:50%;padding:0;display:grid;place-items:center;background:var(--g1);border:0;color:#fff;flex:none}.cinb svg{width:22px;height:22px}
+.chatc nav{display:none}.chatc main{padding-bottom:90px}#chb{position:relative}#chb[hidden]{display:none}#chb[data-n]::after{content:attr(data-n);position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:#e5484d;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+.pk{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--line)}.pk input{width:20px;height:20px;accent-color:var(--g1)}
 </style></head><body>
-<div id="auth" hidden></div><div id="app" hidden><input id="imf" type="file" accept=".xlsx,.xls,.ods,.csv" hidden onchange="imp(this.files[0]);this.value=''"><input id="pf" type="file" accept=".xlsx,.xls,.ods" hidden onchange="impPol(this.files[0]);this.value=''"><header><div class="strip"><span>INVENTARIO · FARMACIA SAAS</span><span id="clk"></span></div><div class="hd"><button id="av" class="avb" onclick="go('per')" aria-label="Mi perfil"></button><div style="flex:1;min-width:0"><div class="sub" id="sb">Farmacia SAAS</div><h1 id="hi">Inventario</h1></div><button id="thb" class="thb" onclick="thToggle()" aria-label="Cambiar tema"></button><img id="lg" alt="Farmacia SAAS"></div><div id="ctl" style="margin-top:8px"></div></header><main><div id="flt"></div><div id="main"></div></main>
+<div id="auth" hidden></div><div id="app" hidden><input id="imf" type="file" accept=".xlsx,.xls,.ods,.csv" hidden onchange="imp(this.files[0]);this.value=''"><input id="pf" type="file" accept=".xlsx,.xls,.ods" hidden onchange="impPol(this.files[0]);this.value=''"><header><div class="strip"><span>INVENTARIO · FARMACIA SAAS</span><span id="clk"></span></div><div class="hd"><button id="av" class="avb" onclick="go('per')" aria-label="Mi perfil"></button><div style="flex:1;min-width:0"><div class="sub" id="sb">Farmacia SAAS</div><h1 id="hi">Inventario</h1></div><button id="chb" class="thb" onclick="go('chat')" aria-label="Mensajes" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg></button><button id="thb" class="thb" onclick="thToggle()" aria-label="Cambiar tema"></button><img id="lg" alt="Farmacia SAAS"></div><div id="ctl" style="margin-top:8px"></div></header><main><div id="flt"></div><div id="main"></div></main>
 <nav><button id="n1" onclick="go('inv')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5h6M9 13l2 2 4-4"/></svg></span>Inventario</button><button id="n2" onclick="go('ven')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span>Vencen</button><button id="n5" onclick="go('pol')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7H5v-4M5 7a8 8 0 111 9"/><path d="M12 8v4l3 2"/></svg></span>Devol.</button><button id="n3" onclick="go('res')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>Resumen</button><button id="n4" onclick="go('mas')"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg></span>Más</button></nav><div id="sh" hidden><div class="sb"><h3>Agregar producto</h3><label>Código (SKU)<input id="ac" inputmode="numeric" autocomplete="off" oninput="acIn()"></label><button type="button" onclick="scanOpen()" style="width:100%;margin-bottom:12px">Escanear código de barras</button><img id="ap" alt="" hidden><div id="as" class="top"></div><label>Descripción<input id="ad" autocomplete="off"></label><div class="bar"><button onclick="shut()">Cancelar</button><button class="pri" onclick="saveNew()">Agregar</button></div></div></div></div>
 <div id="toast"></div><div id="scn" hidden><video id="scv" playsinline muted></video><div class="sf"></div><div id="scm">Apunta al código de barras</div><button onclick="scanClose()">Cerrar</button></div>
 <div id="dlg" hidden><div class="db"><div id="dic" class="di"></div><h3 id="dt"></h3><p id="dm"></p><input id="dp" type="text" hidden><textarea id="dta" rows="5" hidden></textarea><div class="bar" id="dbtn"></div></div></div><div id="pr"></div>
@@ -271,7 +277,7 @@ function uiAlert(m,k){return dlg({k:k||kind(m),m,b:[['Aceptar',1,1]]})}
 function uiConfirm(m){return dlg({k:/elimin|reemplaz|borrar|vaci/i.test(m)?'warn':'ask',m,b:[['Cancelar',false],['Aceptar',true,1]]})}
 function uiPrompt(m,v){return dlg({k:'ask',m,v,inp:1,b:[['Cancelar',null],['Aceptar',1,1]]})}
 
-function hdr(){thApply();const p=CU.pf||{};$('#hi').textContent=gr()+', '+CU.n;$('#lg').src=LOGO;$('#sb').textContent=p.cg||'Farmacia SAAS';$('#av').innerHTML=p.f?`<img src="${p.f}" alt="">`:esc(CU.n[0].toUpperCase())}
+function hdr(){thApply();{const cb=$('#chb');if(cb)cb.hidden=!(WS&&CU);chInit()}const p=CU.pf||{};$('#hi').textContent=gr()+', '+CU.n;$('#lg').src=LOGO;$('#sb').textContent=p.cg||'Farmacia SAAS';$('#av').innerHTML=p.f?`<img src="${p.f}" alt="">`:esc(CU.n[0].toUpperCase())}
 function per(){$('#ctl').innerHTML='';$('#flt').innerHTML='';const p=CU.pf||{},f=k=>esc(p[k]||'');
  $('#main').innerHTML=`<div class="card fm"><div class="desc">Mi perfil</div>
 <div class="pho"><div class="big" id="pfo">${p.f?`<img src="${p.f}" alt="">`:esc(CU.n[0].toUpperCase())}</div><div><button class="pri" onclick="$('#pff').click()">Cambiar foto</button><br><button style="margin-top:8px" onclick="quitaFoto()">Quitar</button><input id="pff" type="file" accept="image/*" hidden onchange="foto(this.files[0])"></div></div>
@@ -666,7 +672,7 @@ async function syRunC(manual,again){if(!SY||!CU||!CU.tok||RO||syBusy||SY.uid!==C
   if(manual){toast('✓ Sincronizado');if(ui.view==='mas')render()}
  }catch(e){SY.err=1;SY.msg='No se pudo sincronizar ('+(e&&e.name==='AbortError'?'tiempo agotado':e&&e.message&&e.message!=='0'?e.message:'sin conexión o error del servidor')+'). Se reintenta solo.';syS();if(manual){toast('No se pudo sincronizar');if(ui.view==='mas')render()}}
  syBusy=0}
-const APPV='v14.1';
+const APPV='v15';
 function rqInfo(){return{v:APPV,view:ui.view,th:document.documentElement.getAttribute('data-th')||'auto',on:navigator.onLine,sw:innerWidth+'x'+innerHeight,ua:(navigator.userAgent||'').slice(0,140)}}
 let rqBusy=0;async function rqSend(){if(rqBusy||!WS||!CU||!CU.tok||RO)return 0;const q=ld('inv_rq',[]);if(!q.length)return 0;rqBusy=1;let n=0;
  try{for(const x of q.slice()){const r=await cl('rep',{uid:CU.id,tok:CU.tok,id:x.id,txt:x.txt,ts:x.ts,ctx:x.ctx});if(r.ok||r.err==='limite'){lsw('inv_rq',ld('inv_rq',[]).filter(y=>y.id!==x.id));if(r.ok)n++}else break}}catch(e){}rqBusy=0;return n}
@@ -711,6 +717,65 @@ async function verUsuario(id,n){let r;try{r=await cl('get',{uid:CU.id,tok:CU.tok
  if(!RO)RB={S,POL,ALS,sec:ui.sec,wk:ui.wk};RO=1;RN=n;S=(o&&o.S)||{secs:[]};POL=(o&&o.POL)||null;ALS=(o&&o.ALS)||{};ui.sec=0;ui.view='inv';document.body.classList.add('ro');roBar();render();fade()}
 function salirRO(){if(!RO)return;RO=0;S=RB.S;POL=RB.POL;ALS=RB.ALS;ui.sec=RB.sec;ui.wk=RB.wk;ui.view='adm';document.body.classList.remove('ro');roBar();render();fade();syRun()}
 function masRO(){$('#flt').innerHTML='';$('#ctl').innerHTML='';$('#main').innerHTML=`<div class="card"><div class="desc">Consulta: ${esc(RN)}</div><p class="top">Estás viendo este inventario en modo lectura.</p><button class="pri" onclick="salirRO()">Volver a la administración</button></div><div class="card"><div class="desc">Exportar</div><p class="top">Excel o PDF de este inventario.</p><button class="pri" onclick="exportXlsx()">Exportar Excel</button> <button class="pri" onclick="exportPdf()">Exportar PDF</button></div>`}
+/* ===== Mensajería: Equipo, grupos y chats 1 a 1 (privados) ===== */
+let CH=null,chBusy=0,chTk=0;
+const chK=()=>'inv_ch_'+(CU?CU.id:'');
+function chInit(){if(!WS||!CU||!CU.tok)return;if(!CH||CH._u!==CU.id){CH=ld(chK(),null)||{seq:0,chats:[],msgs:[],rd:[]};CH._u=CU.id;ui.cc=null;ui.cg=0;chBadge();chPoll();chUsers()}}
+async function chUsers(){if(!WS||RO)return;try{const r=await cl('list',{});if(r.ok){U=r.users.map(cu);sv0();await fetchPh(U);chBadge();if(ui.view==='chat')chDraw()}}catch(e){}}
+const chDm=o=>'d:'+[CU.id,o].sort().join(':');
+const chUser=id=>U.find(u=>u.id===id);
+const chUN=m=>{const u=chUser(m.uid);return u?u.n:m.name};
+const chNameOf=cid=>{if(cid==='g:all')return'Equipo';if(cid.startsWith('d:')){const o=cid.split(':').slice(1).find(x=>x!==CU.id),u=chUser(o);return u?u.n:'Usuario'}const g=(CH.chats||[]).find(x=>x.id===cid);return g?g.name:'Grupo'};
+const chAv=cid=>{if(cid.startsWith('d:')){const u=chUser(cid.split(':').slice(1).find(x=>x!==CU.id));return u?phHtml(u):'?'}return cid==='g:all'?'👥':esc((chNameOf(cid)[0]||'G').toUpperCase())};
+const chMine=cid=>{const e=(CH.rd||[]).find(x=>x.cid===cid&&x.uid===CU.id);return Math.max(e?e.seq:0,(ui.chr||{})[cid]||0)};
+const chUn=cid=>CH.msgs.filter(m=>m.cid===cid&&m.seq>chMine(cid)&&m.uid!==CU.id&&m.uid!=='sys').length;
+function chBadge(){const b=$('#chb');if(!b||!CH)return;const n=CH.msgs.filter(m=>m.uid!==CU.id&&m.uid!=='sys'&&m.seq>chMine(m.cid)).length;if(n)b.dataset.n=n>99?'99+':n;else delete b.dataset.n}
+async function chPoll(){if(!WS||!CU||!CU.tok||RO||chBusy||!CH)return;chBusy=1;const antes=CH.seq;
+ try{const r=await cl('chat_sync',{uid:CU.id,tok:CU.tok,since:CH.seq});if(r.ok){const nu=[];
+  r.msgs.forEach(m=>{if(!CH.msgs.some(x=>x.seq===m.seq)){CH.msgs.push(m);nu.push(m)}});
+  CH.msgs.sort((a,b)=>a.seq-b.seq);CH.msgs=CH.msgs.slice(-600);CH.seq=Math.max(CH.seq,r.seq);CH.chats=r.chats;CH.rd=r.rds;lsw(chK(),CH);
+  const verlo=m=>ui.view==='chat'&&ui.cc===m.cid&&!document.hidden,inn=nu.filter(m=>m.uid!==CU.id&&m.uid!=='sys'&&!verlo(m));
+  if(antes>0&&inn.length){beep(1);const m=inn[inn.length-1];toast('💬 '+chUN(m)+': '+m.txt.slice(0,60),3500)}
+  if(ui.view==='chat'){chMark();chDraw()}chBadge()}}catch(e){}chBusy=0}
+setInterval(()=>{chTk++;if(document.hidden)return;if(ui.view==='chat'||chTk%8===0)chPoll()},4000);
+function chMark(){if(!ui.cc)return;const c=ui.cc,last=CH.msgs.filter(m=>m.cid===c).reduce((a,m)=>Math.max(a,m.seq),0);if(last>chMine(c)){(ui.chr=ui.chr||{})[c]=last;cl('chat_read',{uid:CU.id,tok:CU.tok,cid:c,seq:last}).catch(()=>{});chBadge()}}
+const chHM=ts=>new Date(ts).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+function chDay(ts){const d=new Date(ts),h=new Date(),y=new Date(Date.now()-864e5);return d.toDateString()===h.toDateString()?'Hoy':d.toDateString()===y.toDateString()?'Ayer':d.toLocaleDateString('es',{day:'numeric',month:'long'})}
+function chat(){$('#flt').innerHTML='';$('#ctl').innerHTML='';
+ if(!WS||!CU){$('#main').innerHTML='<div class="card"><div class="desc">Mensajes</div><p class="top">Los mensajes están disponibles al conectar el espacio de la farmacia.</p></div>';return}
+ if(!CH)chInit();if(!CH)return;
+ if(!ui.cc&&!ui.cg)chUsers();
+ if(ui.cg)return chGroupForm();
+ if(ui.cc){chMark();$('#main').innerHTML='<div id="cvt"></div><div id="cm"></div>';{const o=$('#cinb');if(o)o.remove();const bx=document.createElement('div');bx.id='cinb';bx.className='cinb';bx.innerHTML='<textarea id="cin" rows="1" placeholder="Escribe un mensaje…" oninput="this.style.height=\'auto\';this.style.height=Math.min(this.scrollHeight,110)+\'px\'" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();chSend()}"></textarea><button onclick="chSend()" aria-label="Enviar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button>';document.body.appendChild(bx)}chDraw(1);return}
+ chDraw()}
+function chDraw(first){if(ui.view!=='chat'||!CH)return;
+ if(ui.cg)return;
+ if(!ui.cc){const rows=[['g:all'],...(CH.chats||[]).map(g=>[g.id]),...U.filter(u=>u.st==='ok'&&u.id!==CU.id).map(u=>[chDm(u.id)])].map(([c])=>{const L=CH.msgs.filter(m=>m.cid===c),l=L[L.length-1];return{c,l,s:l?l.seq:0,n:chUn(c)}}).sort((a,b)=>b.s-a.s||chNameOf(a.c).localeCompare(chNameOf(b.c)));
+  $('#main').innerHTML='<div class="bar" style="margin-bottom:10px"><div class="desc" style="margin:0;flex:1">Mensajes</div><button class="pri" onclick="ui.cg=1;chat()">Nuevo grupo</button></div><p class="top" style="margin:0 2px 10px">Tus chats son privados: solo los ven quienes participan.</p>'+rows.map(({c,l,n})=>`<button class="chr" onclick="chOpen('${c}')"><span class="av">${chAv(c)}</span><span class="tx"><b>${esc(chNameOf(c))}</b><small>${l?(l.uid===CU.id?'Tú: ':c.startsWith('d:')||l.uid==='sys'?'':esc(chUN(l))+': ')+esc(l.txt):'Sin mensajes todavía'}</small></span><span class="rt">${l?esc(chHM(l.ts)):''}${n?'<span class="nb">'+n+'</span>':''}</span></button>`).join('');return}
+ const c=ui.cc,g=c==='g:all'||!c.startsWith('d:'),L=CH.msgs.filter(m=>m.cid===c),gr=(CH.chats||[]).find(x=>x.id===c);
+ const rds=(CH.rd||[]).filter(r=>r.cid===c&&r.uid!==CU.id),vis=m=>rds.some(r=>r.seq>=m.seq);
+ $('#cvt').innerHTML=`<div class="cvh"><button class="thb" onclick="chBack()" aria-label="Volver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><span class="av">${chAv(c)}</span><div style="flex:1;min-width:0"><b>${esc(chNameOf(c))}</b><small>${c==='g:all'?'Todo el equipo':gr?gr.members.map(i=>{const u=chUser(i);return u?u.n:''}).filter(Boolean).join(', '):'Chat privado'}</small></div>${gr?'<button class="mini dng" onclick="chLeave()">Salir</button>':''}</div>`;
+ const nb=innerHeight+scrollY>=document.body.scrollHeight-140;let day='',h='';
+ L.forEach(m=>{const dd=chDay(m.ts);if(dd!==day){day=dd;h+=`<div class="dsep">${dd}</div>`}
+  if(m.uid==='sys'){h+=`<div class="sysm">${esc(m.txt)}</div>`;return}
+  const me=m.uid===CU.id;h+=`<div class="mg ${me?'me':''}"><div class="bb">${!me&&g?'<span class="sn">'+esc(chUN(m))+'</span>':''}${esc(m.txt).replace(/\n/g,'<br>')}<span class="mt">${chHM(m.ts)}${me?`<span class="tk ${vis(m)?'r':''}">${vis(m)?'✓✓':'✓'}</span>`:''}</span></div></div>`});
+ $('#cm').innerHTML=h||'<p class="top" style="text-align:center;margin-top:30px">Aún no hay mensajes. ¡Escribe el primero!</p>';
+ if(first||nb)window.scrollTo(0,document.body.scrollHeight)}
+function chOpen(c){ui.cc=c;ui.cg=0;render();setTimeout(()=>{const i=$('#cin');if(i&&innerWidth>700)i.focus()},80)}
+function chBack(){ui.cc=null;render()}
+async function chSend(){const i=$('#cin');if(!i||!ui.cc)return;const txt=i.value.trim();if(!txt)return;i.value='';i.style.height='auto';
+ let r;try{r=await cl('chat_send',{uid:CU.id,tok:CU.tok,cid:ui.cc,txt})}catch(e){i.value=txt;return uiAlert('No hay conexión. Tu mensaje no se envió.')}
+ if(!r.ok){i.value=txt;return uiAlert(r.err==='limite'?'Estás enviando muy rápido. Espera un momento.':'No se pudo enviar el mensaje.')}
+ await chPoll();window.scrollTo(0,document.body.scrollHeight);i.focus()}
+function chGroupForm(){const us=U.filter(u=>u.st==='ok'&&u.id!==CU.id);
+ $('#main').innerHTML=`<div class="card"><div class="desc">Nuevo grupo</div><label class="top" style="display:block">Nombre del grupo<input id="gn" type="text" maxlength="40" placeholder="Ej: Turno de la tarde" style="margin-top:4px"></label><p class="top" style="margin:12px 0 4px">Elige quiénes entran:</p>${us.map(u=>`<label class="pk"><input type="checkbox" value="${u.id}"><span class="av" style="width:34px;height:34px">${phHtml(u)}</span><b style="color:var(--navy)">${esc(u.n)}</b></label>`).join('')||'<p class="top">Aún no hay más usuarios.</p>'}<div class="act" style="margin-top:14px"><button class="pri" onclick="chGroupMk()">Crear grupo</button><button onclick="ui.cg=0;chat()">Cancelar</button></div></div>`}
+async function chGroupMk(){const n=($('#gn').value||'').trim(),ids=[...document.querySelectorAll('.pk input:checked')].map(x=>x.value);
+ if(!n)return uiAlert('Escribe un nombre para el grupo.');if(!ids.length)return uiAlert('Elige al menos una persona.');
+ let r;try{r=await cl('chat_new',{uid:CU.id,tok:CU.tok,name:n,members:ids})}catch(e){return uiAlert('No hay conexión.')}
+ if(!r.ok)return uiAlert('No se pudo crear el grupo.');ui.cg=0;await chPoll();chOpen(r.id)}
+async function chLeave(){const c=ui.cc;if(!await uiConfirm('¿Salir de este grupo? Ya no recibirás sus mensajes.'))return;
+ try{const r=await cl('chat_leave',{uid:CU.id,tok:CU.tok,cid:c});if(!r.ok)throw 0}catch(e){return uiAlert('No se pudo salir del grupo.')}
+ CH.msgs=CH.msgs.filter(m=>m.cid!==c);ui.cc=null;await chPoll();render()}
 /* --- Administración --- */
 let ADMU=[],ADD=null,ADP=-1,ADR=[],ADRP=0;
 function badgeAdm(pn){const b=$('#n4');if(b)b.classList.toggle('bd',!!(CU&&CU.role!=='user'&&(pn>0||ADRP>0)))}
@@ -842,7 +907,7 @@ function alertasHtml(){let mes=0,vv=0,pe=0;
 function start(){thApply();tick();welcome();const f=new URLSearchParams(location.search).get('f');if(f&&(!WS||WS.code!==f.trim().toUpperCase()))joinWs(f)}
 function fade(){const m=$('#main');if(m.classList){m.classList.remove('fi');void m.offsetWidth;m.classList.add('fi')}}
 function go(v){ui.view=v;render();fade()}
-function render(){Object.entries({n1:'inv',n2:'ven',n5:'pol',n3:'res',n4:'mas'}).forEach(([id,v])=>$('#'+id).className=(v==ui.view||(v=='mas'&&ui.view=='adm'))?'on':'');({inv:()=>{if(!S.secs.length)return empty();ui.sec=Math.min(ui.sec,S.secs.length-1);ctl();list()},ven,pol,res,mas,per,adm})[ui.view]()}
+function render(){document.body.classList.toggle('chatc',ui.view==='chat'&&!!ui.cc);if(!(ui.view==='chat'&&ui.cc)){const o=$('#cinb');if(o)o.remove()}Object.entries({n1:'inv',n2:'ven',n5:'pol',n3:'res',n4:'mas'}).forEach(([id,v])=>$('#'+id).className=(v==ui.view||(v=='mas'&&ui.view=='adm'))?'on':'');({inv:()=>{if(!S.secs.length)return empty();ui.sec=Math.min(ui.sec,S.secs.length-1);ctl();list()},ven,pol,res,mas,per,adm,chat})[ui.view]()}
 start();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
