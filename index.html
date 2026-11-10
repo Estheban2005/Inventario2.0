@@ -257,8 +257,8 @@ function pin(id){const u=U.find(x=>x.id==id);A(lg+`<h2>${esc(u.n)}</h2><p>Escrib
 async function login(id){if(WS)return loginC(id);const u=U.find(x=>x.id==id);if(await hs(id,$('#p1').value)===u.p)enter(id);else uiAlert('PIN incorrecto')}
 function forgot(id){const u=U.find(x=>x.id==id);A(lg+`<h2>Recuperar PIN</h2><p>${esc(u.q)}</p><input id="aa" placeholder="Tu respuesta">${pw('p1','Nuevo PIN')}<button class="pri" onclick="reset('${id}')">Cambiar PIN</button><button onclick="pin('${id}')">Volver</button>`)}
 async function reset(id){const u=U.find(x=>x.id==id),p=$('#p1').value.trim();if(await hs(id,$('#aa').value)!==u.a)return uiAlert('La respuesta no coincide.');if(!/^\d{4,6}$/.test(p))return uiAlert('El PIN debe tener de 4 a 6 números.');u.p=await hs(id,p);sv();uiAlert('PIN cambiado');pin(id)}
-function enter(id,pre){if(!pre){CU=U.find(x=>x.id==id);SY=ld('inv_sync_'+id,null);S=ld('inv_data_'+id,{secs:[]})}if(!S.secs)S={secs:[]};if(paginar())save();setTimeout(()=>syRun(),400);ui.sec=0;ui.wk=0;ui.view='inv';$('#auth').hidden=true;$('#app').hidden=false;hdr();render();fade()}
-function logout(){CU=null;SY=null;RO=0;document.body.classList.remove('ro');S={secs:[]};welcome()}
+function enter(id,pre){if(!pre){CU=U.find(x=>x.id==id);SY=ld('inv_sync_'+id,null);S=ld('inv_data_'+id,{secs:[]})}if(!S.secs)S={secs:[]};if(paginar())save();setTimeout(()=>syRun(),400);try{localStorage.setItem('inv_sess',JSON.stringify({id:CU.id,tok:CU.tok||null,ws:WS?WS.id:null}))}catch(e){}ui.sec=0;ui.wk=0;ui.view='inv';$('#auth').hidden=true;$('#app').hidden=false;hdr();render();fade()}
+function logout(){try{localStorage.removeItem('inv_sess')}catch(e){}CU=null;SY=null;RO=0;document.body.classList.remove('ro');S={secs:[]};welcome()}
 async function adminPin(){const n=await uiPrompt('Usuario a restablecer:\n'+U.map(u=>u.n).join(', '));const u=U.find(x=>x.n.toLowerCase()===(n||'').trim().toLowerCase());if(!u)return;const p=(await uiPrompt('Nuevo PIN (4 a 6 números)')||'').trim();if(!/^\d{4,6}$/.test(p))return uiAlert('PIN no válido.');u.p=await hs(u.id,p);sv();uiAlert('PIN restablecido para '+u.n)}
 function empty(){$('#ctl').innerHTML='';$('#flt').innerHTML='';$('#main').innerHTML='<div class="card"><div class="desc">Aún no tienes productos</div><p class="top">Importa tu inventario desde un Excel o crea una sección y agrega productos a mano.</p><button class="pri" onclick="$(\'#imf\').click()">Importar desde Excel</button> <button onclick="newSec()">Nueva sección</button></div>'}
 async function newSec(){const n=(await uiPrompt('Nombre de la sección')||'').replace(/[:\\\/?*\[\]]/g,'').trim();if(!n)return;S.secs.push({n:n.replace(/ /g,'_').toUpperCase().slice(0,31),t:n.toUpperCase(),it:[]});ui.sec=S.secs.length-1;save();go('inv')}
@@ -695,7 +695,7 @@ function enterC(u,tok,r){const id=u.id,ph=(r&&r.ph)||phc(id);
  const loc=ld('inv_data_'+id,null),sy=ld('inv_sync_'+id,null);let rem=null;if(r&&r.data){try{rem=JSON.parse(r.data)}catch(e){}}
  SY={uid:id,v:sy&&!sy.code?sy.v:0,dirty:sy&&!sy.code?sy.dirty:0};S=loc&&loc.secs?loc:{secs:[]};
  if(rem&&rem.S){syApply(rem,!!(loc&&SY.dirty));SY.v=r.v}else if(r&&!rem&&loc&&loc.secs&&loc.secs.length)SY.dirty=1;
- syS();enter(id,1);if(r)polSync(r.pv);mapSync(r.mv);if(u.role!=='user')admLoad()}
+ syS();enter(id,1);if(r){polSync(r.pv);mapSync(r.mv)}if(u.role!=='user')admLoad()}
 function kick(e){logout();uiAlert(e==='pin'?'Tu PIN fue cambiado. Entra de nuevo con el PIN nuevo.':'Tu usuario ya no tiene acceso. Habla con el administrador.')}
 const smOf=()=>{const t=[0,0,0,0],fa=[0,0,0,0],so=[0,0,0,0];let n=0;S.secs.forEach(s=>s.it.forEach(it=>{n++;it.w.forEach(([a,b],k)=>{if(a!==null&&b!==null){t[k]++;const d=b-a;if(d<0)fa[k]+=d;if(d>0)so[k]+=d}})}));return{n,c:t,fa,so}};
 async function syRunC(manual,again){if(!SY||!CU||!CU.tok||RO||syBusy||SY.uid!==CU.id)return;syBusy=1;
@@ -709,7 +709,7 @@ async function syRunC(manual,again){if(!SY||!CU||!CU.tok||RO||syBusy||SY.uid!==C
   if(manual){toast('✓ Sincronizado');if(ui.view==='mas')render()}
  }catch(e){SY.err=1;SY.msg='No se pudo sincronizar ('+(e&&e.name==='AbortError'?'tiempo agotado':e&&e.message&&e.message!=='0'?e.message:'sin conexión o error del servidor')+'). Se reintenta solo.';syS();if(manual){toast('No se pudo sincronizar');if(ui.view==='mas')render()}}
  syBusy=0}
-const APPV='v19';
+const APPV='v19.1';
 function rqInfo(){return{v:APPV,view:ui.view,th:document.documentElement.getAttribute('data-th')||'auto',on:navigator.onLine,sw:innerWidth+'x'+innerHeight,ua:(navigator.userAgent||'').slice(0,140)}}
 let rqBusy=0;async function rqSend(){if(rqBusy||!WS||!CU||!CU.tok||RO)return 0;const q=ld('inv_rq',[]);if(!q.length)return 0;rqBusy=1;let n=0;
  try{for(const x of q.slice()){const r=await cl('rep',{uid:CU.id,tok:CU.tok,id:x.id,txt:x.txt,ts:x.ts,ctx:x.ctx});if(r.ok||r.err==='limite'){lsw('inv_rq',ld('inv_rq',[]).filter(y=>y.id!==x.id));if(r.ok)n++}else break}}catch(e){}rqBusy=0;return n}
@@ -928,7 +928,7 @@ async function chPick(f){if(!f)return;if(!/^image\//.test(f.type))return uiAlert
   if(d.length>440000)return uiAlert('La imagen es demasiado pesada.');ui.pim=d;chBar()}catch(e){uiAlert('No pude leer esa imagen.')}}
 function chOpen(c){ui.cc=c;ui.cg=0;ui.rp=null;ui.pim=null;ui.em=0;ui.cnew=0;render();setTimeout(()=>{const i=$('#cin');if(i&&innerWidth>700)i.focus()},80)}
 function chBack(){if(REC)chRecEnd(0);ui.cc=null;ui.rp=null;ui.pim=null;render()}
-async function chSend(){const i=$('#cin');if(!i||!ui.cc)return;const txt=i.value.trim();if(!txt&&!ui.pim)return;
+async function chSend(){if(REC){chRecEnd(1);return}const i=$('#cin');if(!i||!ui.cc)return;const txt=i.value.trim();if(!txt&&!ui.pim)return;
  const p={uid:CU.id,tok:CU.tok,cid:ui.cc,txt,rep:ui.rp?ui.rp.seq:0,img:ui.pim||undefined},old=[i.value,ui.rp,ui.pim];i.value='';i.style.height='auto';ui.rp=null;ui.pim=null;ui.em=0;chBar();
  let r;try{r=await cl('chat_send',p)}catch(e){i.value=old[0];ui.rp=old[1];ui.pim=old[2];chBar();return uiAlert('No hay conexión. Tu mensaje no se envió.')}
  if(!r.ok){i.value=old[0];ui.rp=old[1];ui.pim=old[2];chBar();return uiAlert(r.err==='limite'?'Estás enviando muy rápido. Espera un momento.':'No se pudo enviar el mensaje.')}
@@ -1156,7 +1156,14 @@ function alertasHtml(){let mes=0,vv=0,pe=0;
  const h=r(mes,mes==1?'producto vence este mes':'productos vencen este mes',"ui.mode='mes';go('ven')",'w')+r(vv,vv==1?'producto ya vencido':'productos ya vencidos',"ui.mode='mes';go('ven')",'n')+(POL?r(pe,pe==1?'producto toca sacar por política':'productos tocan sacar por política',"ui.pm='ya';go('pol')",'w'):'<button class="al" onclick="go(\'pol\')">Carga la política de devolución para ver cuáles sacar<span>›</span></button>');
  return h?`<div class="card" style="padding:12px 12px 6px"><div class="desc" style="font-size:15px;margin:0 0 8px">Alertas</div>${h}</div>`:''}
 
-function start(){thApply();tick();welcome();const f=new URLSearchParams(location.search).get('f');if(f&&(!WS||WS.code!==f.trim().toUpperCase()))joinWs(f)}
+function autoIn(){const ss=ld('inv_sess',null);if(!ss||!ss.id)return 0;
+ try{if(WS){if(!ss.tok||ss.ws!==WS.id)return 0;const u=U.find(x=>x.id===ss.id&&(!x.st||x.st==='ok'));if(!u)return 0;enterC(u,ss.tok,null);return 1}
+  if(ss.tok||!U.find(x=>x.id==ss.id))return 0;enter(ss.id);return 1}catch(e){return 0}}
+function closeTop(){let o;if(o=$('#ayd')){ayClose();return 1}if(o=$('#civ')){o.remove();return 1}if(o=$('#cmn')){o.remove();return 1}if(o=$('#sh'),o&&!o.hidden){shut();return 1}
+ if(CU&&ui.view==='chat'&&(ui.cc||ui.cg)){ui.cg=0;chBack();return 1}if(CU&&ui.view==='map'&&ui.mp!=null){mapBack();return 1}if(CU&&ui.view!=='inv'){go(ui.view==='map'?'mas':'inv');return 1}return 0}
+try{history.pushState({s:1},'')}catch(e){}
+addEventListener('popstate',()=>{if(!CU)return;if(closeTop()){try{history.pushState({s:1},'')}catch(e){}}else if(Date.now()-(window.__bk||0)>2500){window.__bk=Date.now();try{history.pushState({s:1},'')}catch(e){}toast('Pulsa atrás otra vez para salir',2200)}});
+function start(){thApply();tick();if(!autoIn())welcome();const f=new URLSearchParams(location.search).get('f');if(f&&(!WS||WS.code!==f.trim().toUpperCase()))joinWs(f)}
 function fade(){const m=$('#main');if(m.classList){m.classList.remove('fi');void m.offsetWidth;m.classList.add('fi')}}
 function go(v){ui.view=v;render();fade()}
 function render(){document.body.classList.toggle('chatc',ui.view==='chat'&&!!ui.cc);if(!(ui.view==='chat'&&ui.cc)){['#cinb','#cvt','#cmn','#civ'].forEach(s=>{const o=$(s);if(o)o.remove()})}Object.entries({n1:'inv',n2:'ven',n5:'pol',n3:'res',n4:'mas'}).forEach(([id,v])=>$('#'+id).className=(v==ui.view||(v=='mas'&&(ui.view=='adm'||ui.view=='map')))?'on':'');({inv:()=>{if(!S.secs.length)return empty();ui.sec=Math.min(ui.sec,S.secs.length-1);ctl();list()},ven,pol,res,mas,per,adm,chat,map:mapV})[ui.view]()}
