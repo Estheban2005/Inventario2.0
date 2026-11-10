@@ -23,6 +23,7 @@ input[type=checkbox]{width:20px;height:20px;accent-color:var(--g2);padding:0;mar
 button{border:1.5px solid var(--g1);border-radius:999px;padding:10px 18px;background:var(--sf);color:var(--g2);font-weight:600;cursor:pointer;transition:transform .12s,background-color .15s}
 button:active{transform:scale(.96)}
 .pri{background:var(--gb);border-color:var(--gb);color:#fff}
+.mpw{overflow:auto;max-height:68vh;border-radius:12px;border:1px solid var(--line);background:#fff}.mpw img{display:block;width:100%}.mpi{position:relative}.mpi img{width:100%}.mph{position:absolute;display:block;background:rgba(16,150,90,.16);border:1.5px solid rgba(16,150,90,.55);border-radius:4px;cursor:pointer}.mph.hl{background:rgba(225,29,72,.28);border:2.5px solid #e11d48;animation:ring 1.2s ease-in-out infinite}.mpz{display:flex;gap:8px;margin-top:8px}.mpc{display:inline-block;margin:0 6px 8px 0;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--sf);color:var(--navy);font-weight:700;font-size:13px}@keyframes ring{50%{opacity:.55}}
 .card{background:var(--sf);border:1px solid var(--line);border-radius:22px;padding:14px;margin-bottom:12px;box-shadow:0 2px 12px rgba(20,50,20,.06)}
 .cx{border-left:5px solid var(--neg)}.cw{border-left:5px solid var(--warn)}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--mut)}
@@ -170,7 +171,7 @@ function ctl(){$('#ctl').innerHTML=`<div class="bar"><select onchange="ui.sec=+t
 const card=(it,i)=>{const[s,f]=it.w[ui.wk],v=df(it),d=md(it);return `<div id="k${i}" class="card ${d===null?'':d<=0?'cx':d<=7?'cw':''}"><div class="top"><span>${esc(it.c)}</span><span id="t${i}">${tag(it)}</span></div><div class="dw">${it.im?`<img class="ph" loading="lazy" src="${esc(it.im)}" alt="" onclick="verFoto(${i})" onerror="this.remove()">`:''}<div class="desc">${esc(it.d)}</div></div>${labLine(it)}
 <label class="lb">Vence<input type="month" value="${it.fv}" onchange="setFv(${i},this.value)"></label>
 <div class="row"><label>Sistema<input type="number" inputmode="numeric" value="${s??''}" onchange="setV(${i},0,this.value)"></label><label>Físico<input type="number" inputmode="numeric" value="${f??''}" onchange="setV(${i},1,this.value)"></label><div id="d${i}" class="diff ${dcls(v)}">${dtxt(v)}</div></div>
-<div class="act"><button onclick="edit(${i})">Editar</button><button onclick="del(${i})">Eliminar</button>${POL?`<button style="border-color:var(--line);color:var(--navy)" onclick="asignLab(${ui.sec},${i})">Laboratorio</button>`:''}<label><input type="checkbox" ${it.st?'checked':''} onchange="setSt(${i},this.checked)"> Próximo a vencer (*)</label></div></div>`};
+<div class="act"><button onclick="edit(${i})">Editar</button><button onclick="del(${i})">Eliminar</button>${MAP?`<button style="border-color:var(--line);color:var(--navy)" onclick="mapLoc(${i})">📍 ${it.loc?'Ubicación':'Ubicar'}</button>`:''}${POL?`<button style="border-color:var(--line);color:var(--navy)" onclick="asignLab(${ui.sec},${i})">Laboratorio</button>`:''}<label><input type="checkbox" ${it.st?'checked':''} onchange="setSt(${i},this.checked)"> Próximo a vencer (*)</label></div></div>`};
 function prog(){const its=S.secs[ui.sec].it;$('#prg').textContent=`Contados ${its.filter(ok).length} de ${its.length}`}
 function list(){const q=($('#q')?.value||'').toLowerCase(),its=S.secs[ui.sec].it;
  prog();
@@ -207,7 +208,7 @@ function res(){$('#flt').innerHTML='';
  $('#main').innerHTML=box('Total',T[0],T[1],T[2],T[3])+h+(det.length?'<h2 style="font-size:16px">Productos con diferencia</h2>'+det.map(({s,it,d})=>`<div class="card"><div class="top"><span>${esc(it.c)} · ${esc(nm(s))}</span><b class="${dcls(d)}" style="font-size:20px">${dtxt(d)}</b></div><div class="desc" style="margin:2px 0 0">${esc(it.d)}</div></div>`).join(''):'')+'<button class="pri" style="width:100%;padding:14px" onclick="exportXlsx()">Exportar Excel</button><button style="width:100%;padding:14px;margin-top:8px" onclick="exportPdf()">Exportar PDF</button>'}
 function mas(){if(RO)return masRO();$('#flt').innerHTML='';$('#ctl').innerHTML='';
  const c=(t,p,b)=>`<div class="card"><div class="desc">${t}</div><p class="top">${p}</p>${b}</div>`;
- $('#main').innerHTML=c('Importar inventario','Carga tu inventario desde un Excel, ODS o CSV con las columnas CODIGO, DESCRIPCION y F.V. Reemplaza el inventario actual.','<button class="pri" onclick="$(\'#imf\').click()">Importar desde Excel</button>')
+ $('#main').innerHTML=(WS?c('Mapa de la farmacia',MAP?'Plano de la tienda y estantes de cada categoría ('+MAP.pages.length+'). Toca una zona y ves cómo está exhibida.':(CU.role==='super'?'Carga el PDF de planogramas para que todos vean dónde está cada categoría.':'La administración aún no ha cargado el mapa.'),'<button class="pri" onclick="mapOpen()">'+(MAP||CU.role!=='super'?'Ver mapa':'Cargar mapa')+'</button>'):'')+c('Importar inventario','Carga tu inventario desde un Excel, ODS o CSV con las columnas CODIGO, DESCRIPCION y F.V. Reemplaza el inventario actual.','<button class="pri" onclick="$(\'#imf\').click()">Importar desde Excel</button>')
  +c('Conexión con la página de la farmacia',CFG.proxy?'Conectada: al agregar un producto, la descripción se completa sola con el código (SKU).':'Aún no está conectada. Crea tu buscador gratis con la guía y pega su dirección aquí.','<button class="pri" onclick="cfgProxy()">'+(CFG.proxy?'Cambiar dirección':'Configurar')+'</button> '+(CFG.proxy?'<button onclick="testProxy()">Probar conexión</button>':''))
  +(WS&&CU.role!=='super'?c('Política de devolución',POL?'Política de la farmacia: '+esc(POL.name)+' · '+POL.g.length+' laboratorios. La actualiza el administrador y se aplica sola.':'La administración aún no ha cargado la política.','<button class="pri" onclick="go(\'pol\')">Ver devoluciones</button>'):c('Política de devolución',POL?'Archivo cargado: '+esc(POL.name)+' · '+POL.g.length+' laboratorios.'+(WS?' Se comparte con todos los usuarios.':'')+'':'Aún no has cargado el archivo de política.','<button class="pri" onclick="$(\'#pf\').click()">'+(POL?'Cambiar archivo':'Cargar archivo')+'</button> <button onclick="go(\'pol\')">Ver devoluciones</button>'))
  +c('Códigos de barras','Si algún producto quedó guardado con su código de barras, se cambia por su SKU usando tu buscador. También se hace solo al exportar.','<button class="pri" onclick="arreglarCodigos()">Corregir códigos ahora</button>')
@@ -687,21 +688,21 @@ function enterC(u,tok,r){const id=u.id,ph=(r&&r.ph)||phc(id);
  const loc=ld('inv_data_'+id,null),sy=ld('inv_sync_'+id,null);let rem=null;if(r&&r.data){try{rem=JSON.parse(r.data)}catch(e){}}
  SY={uid:id,v:sy&&!sy.code?sy.v:0,dirty:sy&&!sy.code?sy.dirty:0};S=loc&&loc.secs?loc:{secs:[]};
  if(rem&&rem.S){syApply(rem,!!(loc&&SY.dirty));SY.v=r.v}else if(r&&!rem&&loc&&loc.secs&&loc.secs.length)SY.dirty=1;
- syS();enter(id,1);if(r)polSync(r.pv);if(u.role!=='user')admLoad()}
+ syS();enter(id,1);if(r)polSync(r.pv);mapSync(r.mv);if(u.role!=='user')admLoad()}
 function kick(e){logout();uiAlert(e==='pin'?'Tu PIN fue cambiado. Entra de nuevo con el PIN nuevo.':'Tu usuario ya no tiene acceso. Habla con el administrador.')}
 const smOf=()=>{const t=[0,0,0,0],fa=[0,0,0,0],so=[0,0,0,0];let n=0;S.secs.forEach(s=>s.it.forEach(it=>{n++;it.w.forEach(([a,b],k)=>{if(a!==null&&b!==null){t[k]++;const d=b-a;if(d<0)fa[k]+=d;if(d>0)so[k]+=d}})}));return{n,c:t,fa,so}};
 async function syRunC(manual,again){if(!SY||!CU||!CU.tok||RO||syBusy||SY.uid!==CU.id)return;syBusy=1;
  try{const r=await cl('get',{uid:CU.id,tok:CU.tok,since:SY.v});
   if(r.err){if(r.err==='off'||r.err==='nouser'||r.err==='pin'){syBusy=0;return kick(r.err)}throw new Error(r.err)}
   if(!r.same&&r.v>SY.v&&r.data){syApply(JSON.parse(r.data),!!SY.dirty);SY.v=r.v;syS();render()}
-  polSync(r.pv);
+  polSync(r.pv);mapSync(r.mv);
   if(SY.dirty){const w=await cl('put',{uid:CU.id,tok:CU.tok,v:SY.v,data:JSON.stringify({S,ALS}),sm:smOf()});
    if(w.ok){SY.v=w.v;SY.dirty=0}else if(w.status===409){syBusy=0;if(!again)return syRunC(manual,1);throw new Error('0')}else throw new Error(w.err||'0')}
   SY.msg='Última sincronización: '+new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});SY.err=0;syS();
   if(manual){toast('✓ Sincronizado');if(ui.view==='mas')render()}
  }catch(e){SY.err=1;SY.msg='No se pudo sincronizar ('+(e&&e.name==='AbortError'?'tiempo agotado':e&&e.message&&e.message!=='0'?e.message:'sin conexión o error del servidor')+'). Se reintenta solo.';syS();if(manual){toast('No se pudo sincronizar');if(ui.view==='mas')render()}}
  syBusy=0}
-const APPV='v16';
+const APPV='v17';
 function rqInfo(){return{v:APPV,view:ui.view,th:document.documentElement.getAttribute('data-th')||'auto',on:navigator.onLine,sw:innerWidth+'x'+innerHeight,ua:(navigator.userAgent||'').slice(0,140)}}
 let rqBusy=0;async function rqSend(){if(rqBusy||!WS||!CU||!CU.tok||RO)return 0;const q=ld('inv_rq',[]);if(!q.length)return 0;rqBusy=1;let n=0;
  try{for(const x of q.slice()){const r=await cl('rep',{uid:CU.id,tok:CU.tok,id:x.id,txt:x.txt,ts:x.ts,ctx:x.ctx});if(r.ok||r.err==='limite'){lsw('inv_rq',ld('inv_rq',[]).filter(y=>y.id!==x.id));if(r.ok)n++}else break}}catch(e){}rqBusy=0;return n}
@@ -732,6 +733,74 @@ async function cambiarPin(){const a=await uiPrompt('Escribe tu PIN actual:','');
  const nt=await hs(CU.id,n);let r;try{r=await cl('upd',{uid:CU.id,tok:CU.tok,newtok:nt})}catch(e){return uiAlert('No hay conexión.')}
  if(!r.ok)return uiAlert('No se pudo cambiar el PIN.');CU.tok=nt;try{localStorage.setItem('inv_lv_'+CU.id,await hs('lv',nt))}catch(e){}uiAlert('PIN cambiado.','ok')}
 
+/* ===== Mapa de la farmacia: el PDF de planogramas lo sube el superusuario y llega solo a todos ===== */
+const MPK='inv_map_meta';let MAP=ld(MPK,null);
+const mvK=()=>'inv_mv_'+(WS?WS.id.slice(0,8):'');
+const idbO=()=>new Promise((ok,no)=>{const r=indexedDB.open('invmap',1);r.onupgradeneeded=()=>r.result.createObjectStore('p');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+async function idbG(k){try{const d=await idbO();return await new Promise(ok=>{const q=d.transaction('p').objectStore('p').get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>ok(null)})}catch(e){return null}}
+async function idbS(k,v){try{const d=await idbO();d.transaction('p','readwrite').objectStore('p').put(v,k)}catch(e){}}
+async function mapSync(mv){if(!WS||!CU||mv===undefined)return;if(mv!==ld(mvK(),0)){try{const r=await cl('map_get',{uid:CU.id,tok:CU.tok});if(r.ok){MAP=r.meta?JSON.parse(r.meta):null;lsw(MPK,MAP);lsw(mvK(),r.mv);if(['map','mas'].includes(ui.view))render()}}catch(e){}}}
+const mapKey=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase();
+async function mapImg(n){if(!MAP)return null;const k=MAP.v+':'+n;let d=await idbG(k);if(d)return d;try{const r=await cl('map_img',{uid:CU.id,tok:CU.tok,n});if(r.ok&&r.img){idbS(k,r.img);return r.img}}catch(e){}return null}
+const mapPg=n=>MAP&&MAP.pages.find(p=>p.n===n);
+const mapByT=t=>MAP&&MAP.pages.find(p=>p.t===t);
+function mapOpen(){ui.mp=null;ui.mpick=null;go('map')}
+function mapP(n){ui.mp=n;render();scrollTo(0,0)}
+function mapZ(d){ui.mz=Math.max(100,Math.min(400,(ui.mz||100)+d*60));mapV()}
+function mapLoc(i){const it=S.secs[ui.sec].it[i];ui.mpick=null;ui.mps={s:ui.sec,i};if(!MAP){toast('Aún no hay mapa cargado');return}const p=it.loc&&mapByT(it.loc);if(p){ui.mp=p.n;ui.mpick=null;go('map')}else{ui.mp=null;ui.mpick={s:ui.sec,i};go('map')}}
+function mapAsig(n){const q=ui.mps||ui.mpick;if(!q)return;const it=S.secs[q.s]&&S.secs[q.s].it[q.i];const p=mapPg(n);if(!it||!p)return;it.loc=p.t;save();ui.mpick=null;ui.mp=n;toast('📍 Ubicación guardada');render()}
+function mapQuit(){const q=ui.mps;if(!q)return;const it=S.secs[q.s]&&S.secs[q.s].it[q.i];if(it){delete it.loc;save()}ui.mps=null;ui.mp=null;render()}
+function mapChg(){ui.mpick=ui.mps;ui.mp=null;render()}
+function mapBack(){if(ui.mp!=null){ui.mp=null;ui.mpick=null;render()}else{const b=ui.mps;ui.mps=null;go(b?'inv':'mas')}}
+function mapQ(v){ui.mq=v;mapList()}
+function mapList(){const e=$('#mpl');if(!e)return;const q=mapKey(ui.mq||'').trim();const its=[];if(q&&S&&S.secs)S.secs.forEach(s=>s.it.forEach(it=>{if(it.loc&&(mapKey(it.d).includes(q)||String(it.c).includes(q)))its.push(it)}));
+ const ps=MAP.pages.filter(p=>!q||mapKey(p.t).includes(q)||its.some(it=>it.loc===p.t));
+ e.innerHTML=(ui.mpick?'<p class="top" style="margin:0 0 8px"><b>Elige la categoría donde está este producto:</b></p>':'')+(ps.length?ps.map(p=>`<button class="mpc" onclick="${ui.mpick?`mapAsig(${p.n})`:`mapP(${p.n})`}">${esc(p.t)}${its.some(it=>it.loc===p.t)?' 📍':''}</button>`).join(''):'<p class="top">No hay categorías con ese nombre.</p>')}
+async function mapV(){$('#flt').innerHTML='';$('#ctl').innerHTML='';const M=$('#main');
+ const sup=WS&&CU&&CU.role==='super';
+ const up=sup?`<div class="card"><div class="desc">Actualizar mapa</div><p class="top">${MAP?'Mapa cargado: <b>'+esc(MAP.name)+'</b> · '+MAP.pages.length+' categorías · '+new Date(MAP.ts).toLocaleDateString('es')+'.':'Aún no hay mapa.'} Cuando cambie la distribución, carga aquí el PDF nuevo: se reemplaza y todos lo reciben solos.</p><p class="top" id="mst"></p><button class="pri" onclick="$('#mpf').click()">${MAP?'Cargar PDF nuevo':'Cargar PDF del mapa'}</button><input id="mpf" type="file" accept="application/pdf,.pdf" hidden onchange="mapUp(this)"></div>`:'';
+ if(!MAP){M.innerHTML=`<div class="card"><div class="desc">Mapa de la farmacia</div><p class="top">${sup?'Carga el PDF de planogramas para ver dónde está cada categoría.':'La administración aún no ha cargado el mapa.'}</p><button onclick="mapBack()">Volver</button></div>`+up;return}
+ if(ui.mp!=null){const p=mapPg(ui.mp);if(!p){ui.mp=null;return mapV()}
+  const q=ui.mps,it=q&&S.secs[q.s]&&S.secs[q.s].it[q.i];
+  M.innerHTML=`<div class="card"><button onclick="mapBack()">← Volver</button> <button onclick="mapPlan(${p.n})">Ver en el plano</button><div class="desc" style="margin-top:10px">${esc(p.t)}</div>${it?`<p class="top">📍 ${esc(it.c)} · ${esc(it.d)}</p><div class="act"><button onclick="mapChg()">Cambiar ubicación</button><button onclick="mapQuit()">Quitar</button></div>`:''}<div class="mpw"><img id="mpg" alt="" style="width:${ui.mz2||100}%"></div><div class="mpz"><button onclick="ui.mz2=Math.max(100,(ui.mz2||100)-60);$('#mpg').style.width=ui.mz2+'%'">−</button><button onclick="ui.mz2=Math.min(400,(ui.mz2||100)+60);$('#mpg').style.width=ui.mz2+'%'">+</button></div></div>`;
+  const d=await mapImg(p.n);const g=$('#mpg');if(g)g.src=d||'';if(!d&&g)g.insertAdjacentHTML('afterend','<p class="top">No se pudo cargar la imagen. Revisa tu conexión.</p>');return}
+ const z=ui.mz||100,hl=ui.mh||[];
+ M.innerHTML=`<div class="card"><div class="top"><button onclick="mapBack()">← Volver</button><span><button onclick="mapZ(-1)">−</button> <button onclick="mapZ(1)">+</button></span></div><div class="desc" style="margin-top:8px">Plano de la farmacia</div><p class="top" style="margin:0 0 8px">Toca una zona para ver su estante.${ui.mpick?' <b>Elige la zona del producto.</b>':''}</p><div class="mpw"><div class="mpi" style="width:${z}%"><img id="mpp" alt="">${MAP.hs.map(h=>`<b class="mph${hl.includes(h.p)?' hl':''}" style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%" onclick="${ui.mpick?`mapAsig(${h.p})`:`mapP(${h.p})`}"></b>`).join('')}</div></div></div><div class="card"><input id="mq" type="search" placeholder="Buscar categoría o producto…" value="${esc(ui.mq||'')}" oninput="mapQ(this.value)" style="width:100%"><div id="mpl" style="margin-top:10px"></div></div>`+up;
+ mapList();const d=await mapImg(MAP.plan);const g=$('#mpp');if(g)g.src=d||''}
+function mapPlan(n){ui.mh=[n];ui.mp=null;render();scrollTo(0,0)}
+async function mapUp(inp){const f=inp.files&&inp.files[0];inp.value='';if(!f)return;if(!WS||!CU||CU.role!=='super')return;
+ const st=t=>{const e=$('#mst');if(e)e.textContent=t};
+ if(!navigator.onLine){uiAlert('Necesitas conexión a internet para cargar el mapa.');return}
+ try{st('Preparando el lector de PDF…');const lib=await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/legacy/build/pdf.min.mjs');lib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/legacy/build/pdf.worker.min.mjs';
+  const doc=await lib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;
+  const pages=[];let plan=0,hsRaw=null,pv0=null;const N=doc.numPages;
+  const draw=async(pg,w,q)=>{const v0=pg.getViewport({scale:1}),sc=w/v0.width,vp=pg.getViewport({scale:sc}),cv=document.createElement('canvas');cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);const cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);await pg.render({canvasContext:cx,canvas:cv,viewport:vp}).promise;return{img:cv.toDataURL('image/jpeg',q),vp}};
+  const nv=Math.floor(Date.now()/1000),imgs=[];
+  for(let n=1;n<=N;n++){st('Leyendo página '+n+' de '+N+'…');const pg=await doc.getPage(n),tc=await pg.getTextContent(),its=tc.items.filter(i=>i.str&&i.str.trim());
+   const i0=its.findIndex(i=>/^\s*CATEGOR[IÍ]A\s*:/i.test(i.str));
+   if(i0>=0){let t=its[i0].str.replace(/^\s*CATEGOR[IÍ]A\s*:\s*/i,'');for(let k=i0+1;k<its.length&&k<i0+3;k++){if(its[k].transform[4]<100&&its[k].height>=12)t+=' '+its[k].str;else break}
+    t=t.replace(/\s+/g,' ').trim();pages.push({n,t,_i:imgs.length});imgs.push({n,pg,w:1000,q:.62})}
+   else if(its.length>40&&!plan){plan=n;pv0=pg;hsRaw=its;imgs.push({n,pg,w:1500,q:.72})}}
+  if(!pages.length)throw new Error('Ese PDF no tiene páginas de categorías («CATEGORIA: …»).');
+  // zonas del plano: se relacionan los rótulos del plano con el título de cada categoría
+  const hs=[];if(plan){const vp=pv0.getViewport({scale:1}),W=vp.width,H=vp.height;
+   const stem=s=>new Set(mapKey(s).split(/[^A-Z0-9]+/).filter(w=>w.length>2).map(w=>w.slice(0,3)));
+   const jac=(a,b)=>{if(!a.size||!b.size)return 0;let i=0;a.forEach(x=>{if(b.has(x))i++});return i/(a.size+b.size-i)};
+   const box=its=>{let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;its.forEach(i=>{const[a,b,c,d,e,f]=i.transform,lu=Math.hypot(a,b)||1,lv=Math.hypot(c,d)||1,w=i.width,h=i.height||Math.hypot(c,d);[[0,0],[w,0],[0,h],[w,h]].forEach(([p,q])=>{const x=e+a/lu*p+c/lv*q,y=f+b/lu*p+d/lv*q,[X,Y]=vp.convertToViewportPoint(x,y);x0=Math.min(x0,X);y0=Math.min(y0,Y);x1=Math.max(x1,X);y1=Math.max(y1,Y)})});return[x0,y0,x1,y1]};
+   const wins=[];for(let i=0;i<hsRaw.length;i++)for(let l=1;l<=3&&i+l<=hsRaw.length;l++){const g=hsRaw.slice(i,i+l);wins.push({g,s:stem(g.map(x=>x.str).join(' ')),k:mapKey(g.map(x=>x.str).join('')).replace(/[^A-Z0-9]/g,'')})}
+   const best=new Map();
+   wins.forEach(w=>{let bp=null,bs=0;pages.forEach(p=>{const k=mapKey(p.t).replace(/[^A-Z0-9]/g,'');let s=w.k===k?1.5:jac(w.s,stem(p.t));if(w.k.length>=5&&k.startsWith(w.k)&&s<.9)s=Math.max(s,.9);if(s<.6&&w.s.size&&w.k.length>=6){const ps=stem(p.t);let all=1;w.s.forEach(x=>{if(!ps.has(x))all=0});if(all&&ps.size<=3)s=.62}if(s>bs){bs=s;bp=p}});
+    if(bp&&bs>=.6){w.p=bp;w.sc=bs-w.g.length*.001;const m=best.get(bp.n);if(!m||w.sc>m.sc+1e-9)best.set(bp.n,{sc:w.sc,ws:[w]});else if(Math.abs(w.sc-m.sc)<1e-9)m.ws.push(w)}});
+   const used=new Set();
+   best.forEach((m,pn)=>m.ws.forEach(w=>{const key=w.g.map(x=>x.transform[4]+','+x.transform[5]).join('|');if(used.has(key))return;used.add(key);const[x0,y0,x1,y1]=box(w.g),pd=3;const X=Math.max(0,x0-pd),Y=Math.max(0,y0-pd),X1=Math.min(W,x1+pd),Y1=Math.min(H,y1+pd);hs.push({p:pn,x:+(X/W*100).toFixed(2),y:+(Y/H*100).toFixed(2),w:+((X1-X)/W*100).toFixed(2),h:+((Y1-Y)/H*100).toFixed(2)})}))}
+  let ok=0;
+  for(const o of imgs){st('Preparando imágenes '+(ok+1)+' de '+imgs.length+'…');const r=await draw(o.pg,o.w,o.q);o.img=r.img;ok++}
+  ok=0;for(const o of imgs){st('Subiendo '+(ok+1)+' de '+imgs.length+'… no cierres la aplicación');const r=await cl('map_put',{uid:CU.id,tok:CU.tok,nv,n:o.n,img:o.img});if(!r.ok)throw new Error('No se pudo subir la página '+o.n);ok++}
+  const meta={v:nv,name:f.name,ts:Date.now(),plan,pages:pages.map(p=>({n:p.n,t:p.t})),hs};
+  const r=await cl('map_end',{uid:CU.id,tok:CU.tok,nv,meta:JSON.stringify(meta)});if(!r.ok)throw new Error('No se pudo activar el mapa');
+  for(const o of imgs)idbS(nv+':'+o.n,o.img);
+  MAP=meta;lsw(MPK,MAP);lsw(mvK(),nv);ui.mp=null;ui.mh=[];mapV();toast('✓ Mapa actualizado: '+pages.length+' categorías, '+hs.length+' zonas en el plano',4500)
+ }catch(e){st('');uiAlert('No pude cargar el mapa: '+(e&&e.message||e))}}
 /* --- Política de devolución compartida: la sube el superusuario y llega sola a todos --- */
 const pvK=()=>'inv_pv_'+(WS?WS.id.slice(0,8):'');
 async function polPush(){if(!WS||!CU||CU.role!=='super'||!POL)return;try{const r=await cl('pol_put',{uid:CU.id,tok:CU.tok,data:JSON.stringify(POL)});if(r.ok){lsw(pvK(),r.v);toast('✓ Política compartida con todos los usuarios')}else throw 0}catch(e){toast('No se pudo compartir la política. Inténtalo de nuevo.',3500)}}
@@ -996,7 +1065,7 @@ function alertasHtml(){let mes=0,vv=0,pe=0;
 function start(){thApply();tick();welcome();const f=new URLSearchParams(location.search).get('f');if(f&&(!WS||WS.code!==f.trim().toUpperCase()))joinWs(f)}
 function fade(){const m=$('#main');if(m.classList){m.classList.remove('fi');void m.offsetWidth;m.classList.add('fi')}}
 function go(v){ui.view=v;render();fade()}
-function render(){document.body.classList.toggle('chatc',ui.view==='chat'&&!!ui.cc);if(!(ui.view==='chat'&&ui.cc)){['#cinb','#cvt','#cmn','#civ'].forEach(s=>{const o=$(s);if(o)o.remove()})}Object.entries({n1:'inv',n2:'ven',n5:'pol',n3:'res',n4:'mas'}).forEach(([id,v])=>$('#'+id).className=(v==ui.view||(v=='mas'&&ui.view=='adm'))?'on':'');({inv:()=>{if(!S.secs.length)return empty();ui.sec=Math.min(ui.sec,S.secs.length-1);ctl();list()},ven,pol,res,mas,per,adm,chat})[ui.view]()}
+function render(){document.body.classList.toggle('chatc',ui.view==='chat'&&!!ui.cc);if(!(ui.view==='chat'&&ui.cc)){['#cinb','#cvt','#cmn','#civ'].forEach(s=>{const o=$(s);if(o)o.remove()})}Object.entries({n1:'inv',n2:'ven',n5:'pol',n3:'res',n4:'mas'}).forEach(([id,v])=>$('#'+id).className=(v==ui.view||(v=='mas'&&(ui.view=='adm'||ui.view=='map')))?'on':'');({inv:()=>{if(!S.secs.length)return empty();ui.sec=Math.min(ui.sec,S.secs.length-1);ctl();list()},ven,pol,res,mas,per,adm,chat,map:mapV})[ui.view]()}
 start();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>
