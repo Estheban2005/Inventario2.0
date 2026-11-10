@@ -24,6 +24,7 @@ button{border:1.5px solid var(--g1);border-radius:999px;padding:10px 18px;backgr
 button:active{transform:scale(.96)}
 .pri{background:var(--gb);border-color:var(--gb);color:#fff}
 .mpw{overflow:auto;max-height:68vh;border-radius:12px;border:1px solid var(--line);background:#fff}.mpw img{display:block;width:100%}.mpi{position:relative}.mpi img{width:100%}.mph{position:absolute;display:block;background:rgba(16,150,90,.16);border:1.5px solid rgba(16,150,90,.55);border-radius:4px;cursor:pointer}.mph.hl{background:rgba(225,29,72,.28);border:2.5px solid #e11d48;animation:ring 1.2s ease-in-out infinite}.mpz{display:flex;gap:8px;margin-top:8px}.mpc{display:inline-block;margin:0 6px 8px 0;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--sf);color:var(--navy);font-weight:700;font-size:13px}@keyframes ring{50%{opacity:.55}}
+.au{display:block;width:min(230px,64vw);height:40px;margin:0 0 4px}.au.ld{height:40px;line-height:40px;padding:0 12px;border-radius:20px;font-size:13px;color:var(--mut);background:var(--soft);box-sizing:border-box}.rdot{width:12px;height:12px;border-radius:50%;background:#e11d48;flex:none;animation:ring 1s infinite}
 .card{background:var(--sf);border:1px solid var(--line);border-radius:22px;padding:14px;margin-bottom:12px;box-shadow:0 2px 12px rgba(20,50,20,.06)}
 .cx{border-left:5px solid var(--neg)}.cw{border-left:5px solid var(--warn)}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--mut)}
@@ -702,7 +703,7 @@ async function syRunC(manual,again){if(!SY||!CU||!CU.tok||RO||syBusy||SY.uid!==C
   if(manual){toast('✓ Sincronizado');if(ui.view==='mas')render()}
  }catch(e){SY.err=1;SY.msg='No se pudo sincronizar ('+(e&&e.name==='AbortError'?'tiempo agotado':e&&e.message&&e.message!=='0'?e.message:'sin conexión o error del servidor')+'). Se reintenta solo.';syS();if(manual){toast('No se pudo sincronizar');if(ui.view==='mas')render()}}
  syBusy=0}
-const APPV='v17';
+const APPV='v18';
 function rqInfo(){return{v:APPV,view:ui.view,th:document.documentElement.getAttribute('data-th')||'auto',on:navigator.onLine,sw:innerWidth+'x'+innerHeight,ua:(navigator.userAgent||'').slice(0,140)}}
 let rqBusy=0;async function rqSend(){if(rqBusy||!WS||!CU||!CU.tok||RO)return 0;const q=ld('inv_rq',[]);if(!q.length)return 0;rqBusy=1;let n=0;
  try{for(const x of q.slice()){const r=await cl('rep',{uid:CU.id,tok:CU.tok,id:x.id,txt:x.txt,ts:x.ts,ctx:x.ctx});if(r.ok||r.err==='limite'){lsw('inv_rq',ld('inv_rq',[]).filter(y=>y.id!==x.id));if(r.ok)n++}else break}}catch(e){}rqBusy=0;return n}
@@ -838,7 +839,7 @@ const chAvW=c=>{const dm=c.startsWith('d:'),o=dm?chOth(c):null,u=o?chUser(o):nul
 const chMine=cid=>{const e=(CH.rd||[]).find(x=>x.cid===cid&&x.uid===CU.id);return Math.max(e?e.seq:0,(ui.chr||{})[cid]||0)};
 const chUn=cid=>CH.msgs.filter(m=>m.cid===cid&&!m.del&&m.seq>chMine(cid)&&m.uid!==CU.id&&m.uid!=='sys').length;
 function chBadge(){const b=$('#chb');if(!b||!CH)return;const n=CH.msgs.filter(m=>!m.del&&m.uid!==CU.id&&m.uid!=='sys'&&m.seq>chMine(m.cid)).length;if(n)b.dataset.n=n>99?'99+':n;else delete b.dataset.n}
-const chPv=m=>m.del?'🚫 Mensaje eliminado':m.hi?'📷 '+(m.txt||'Foto'):m.txt;
+const chPv=m=>m.del?'🚫 Mensaje eliminado':m.hi?(m.k==='a'?'🎤 '+(m.txt||'Audio'):'📷 '+(m.txt||'Foto')):m.txt;
 async function chPoll(){if(!WS||!CU||!CU.tok||RO||chBusy||!CH)return;chBusy=1;const antes=CH.seq;
  try{const r=await cl('chat_sync',{uid:CU.id,tok:CU.tok,since:CH.seq});if(r.ok){const nu=[];
   r.msgs.forEach(m=>{if(m.k==='del'){const o=CH.msgs.find(x=>x.seq===m.rep);if(o){o.del=1;o.txt='';o.hi=0;o.rq=null;IMG.delete(o.seq)}return}
@@ -864,7 +865,7 @@ function chat(){$('#flt').innerHTML='';$('#ctl').innerHTML='';
   let o=$('#cvt');if(o)o.remove();o=$('#cinb');if(o)o.remove();
   const top=document.createElement('div');top.id='cvt';document.body.appendChild(top);
   const bx=document.createElement('div');bx.id='cinb';bx.className='cinb';
-  bx.innerHTML=`<button id="cdn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" aria-label="Ir al final">${I.down}<i></i></button><div id="cx"></div><div class="cwrap"><div class="cbox"><button onclick="chEmoji()" aria-label="Emojis">${I.smile}</button><textarea id="cin" rows="1" placeholder="Escribe un mensaje…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';chTyp()" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&innerWidth>700){event.preventDefault();chSend()}"></textarea><button onclick="$('#cfile').click()" aria-label="Adjuntar foto">${I.clip}</button></div><button class="csend" onclick="chSend()" aria-label="Enviar">${I.send}</button></div><input id="cfile" type="file" accept="image/*" hidden onchange="chPick(this.files[0]);this.value=''">`;
+  bx.innerHTML=`<button id="cdn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" aria-label="Ir al final">${I.down}<i></i></button><div id="cx"></div><div class="cwrap"><div class="cbox"><button onclick="chEmoji()" aria-label="Emojis">${I.smile}</button><textarea id="cin" rows="1" placeholder="Escribe un mensaje…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,110)+'px';chTyp()" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&innerWidth>700){event.preventDefault();chSend()}"></textarea><button onclick="$('#cfile').click()" aria-label="Adjuntar foto">${I.clip}</button><button onclick="chRec()" aria-label="Grabar audio">${I.mic}</button></div><button class="csend" onclick="chSend()" aria-label="Enviar">${I.send}</button></div><input id="cfile" type="file" accept="image/*" hidden onchange="chPick(this.files[0]);this.value=''">`;
   document.body.appendChild(bx);chBar();chDraw(1);return}
  $('#main').innerHTML='<div id="chhd"></div><label class="chs">'+I.search+'<input id="chq" type="search" placeholder="Buscar chat o persona" oninput="ui.cq=this.value;chRows()" value="'+esc(ui.cq||'')+'"></label><div id="chon"></div><div id="chrows"></div>';chDraw()}
 function chRows(){const q=norm(ui.cq||''),el=$('#chrows');if(!el)return;
@@ -884,20 +885,20 @@ function chDraw(first){if(ui.view!=='chat'||!CH||ui.cg)return;
  const c=ui.cc,g=c==='g:all'||!c.startsWith('d:'),L=CH.msgs.filter(m=>m.cid===c),gr=(CH.chats||[]).find(x=>x.id===c);
  const tyn=chTy(c),rds=(CH.rd||[]).filter(r=>r.cid===c&&r.uid!==CU.id),vis=m=>rds.some(r=>r.seq>=m.seq),pn=(CH.pins||[]).includes(c);
  const nOn=(c==='g:all'?U.filter(u=>u.st==='ok').map(u=>u.id):gr?gr.members:[]).filter(i=>i!==CU.id&&chOn(i)).length;
- $('#cvt').innerHTML=`<button class="ib" onclick="chBack()" aria-label="Volver">${I.back}</button>${chAvW(c)}<div class="mid"><b>${esc(chNameOf(c))}</b><small class="${tyn.length?'ty':''}">${tyn.length?(c.startsWith('d:')?'escribiendo…':tyn.join(', ')+' escribe…'):c.startsWith('d:')?chSeen(chOth(c)):nOn+' en línea · '+(c==='g:all'?'Todo el equipo':gr?gr.members.map(i=>{const u=chUser(i);return u?u.n.split(' ')[0]:''}).filter(Boolean).join(', '):'')}</small></div><button class="ib ${pn?'on':''}" onclick="chPin('${c}')" aria-label="Fijar chat">${I.pin}</button>${gr?`<button class="ib" onclick="chLeave()" aria-label="Salir del grupo">${I.out}</button>`:''}`;
+ sH($('#cvt'),`<button class="ib" onclick="chBack()" aria-label="Volver">${I.back}</button>${chAvW(c)}<div class="mid"><b>${esc(chNameOf(c))}</b><small class="${tyn.length?'ty':''}">${tyn.length?(c.startsWith('d:')?'escribiendo…':tyn.join(', ')+' escribe…'):c.startsWith('d:')?chSeen(chOth(c)):nOn+' en línea · '+(c==='g:all'?'Todo el equipo':gr?gr.members.map(i=>{const u=chUser(i);return u?u.n.split(' ')[0]:''}).filter(Boolean).join(', '):'')}</small></div><button class="ib ${pn?'on':''}" onclick="chPin('${c}')" aria-label="Fijar chat">${I.pin}</button>${gr?`<button class="ib" onclick="chLeave()" aria-label="Salir del grupo">${I.out}</button>`:''}`);
  const nb=chNear();let day='',h='',prev=null;
  L.forEach(m=>{const dd=chDay(m.ts);if(dd!==day){day=dd;prev=null;h+=`<div class="dsep">${dd}</div>`}
   if(m.uid==='sys'){h+=`<div class="sysm">${esc(m.txt)}</div>`;prev=null;return}
   const me=m.uid===CU.id,fs=!prev||prev.uid!==m.uid||m.seq-prev.seq>0&&m.ts-prev.ts>300000;prev=m;
   let q='';if(m.rq&&!m.del){try{const o=JSON.parse(m.rq);q=`<span class="rq" style="--rc:${chCol(o.u||'x')}" data-go="${m.rep}"><b>${o.u===CU.id?'Tú':esc((chUser(o.u)||{n:o.n}).n)}</b><span>${esc(o.t)}</span></span>`}catch(e){}}
-  let im='';if(m.hi&&!m.del){const d=IMG.get(m.seq);im=d?`<img class="mi" data-s="${m.seq}" src="${d}" alt="Foto">`:`<div class="mi ld" data-s="${m.seq}"></div>`}
+  let im='';if(m.hi&&!m.del){const d=IMG.get(m.seq);im=m.k==='a'?(d?`<audio class="au" controls preload="metadata" src="${d}"></audio>`:`<div class="au ld" data-s="${m.seq}">🎤 Cargando audio…</div>`):d?`<img class="mi" data-s="${m.seq}" src="${d}" alt="Foto">`:`<div class="mi ld" data-s="${m.seq}"></div>`}
   const body=m.del?'🚫 Se eliminó este mensaje':esc(m.txt).replace(/\n/g,'<br>');
   h+=`<div class="mg ${me?'me':''} ${fs?'fs':''}" data-s="${m.seq}">${!me&&g?`<span class="mav">${fs?chAvU(m.uid):''}</span>`:''}<div class="bb ${m.del?'dl':''}">${!me&&g&&fs?`<span class="sn" style="color:${chCol(m.uid)}">${esc(chUN(m))}</span>`:''}${q}${im}${body}<span class="mt">${chHM(m.ts)}${me&&!m.del?`<span class="tk ${vis(m)?'r':''}">${vis(m)?'✓✓':'✓'}</span>`:''}</span></div></div>`});
- $('#cm').innerHTML=h||`<div class="chme"><span class="big">💬</span>Aún no hay mensajes.<br>¡Escribe el primero!</div>`;
+ chSet(h||`<div class="chme"><span class="big">💬</span>Aún no hay mensajes.<br>¡Escribe el primero!</div>`);
  if(first||nb)window.scrollTo(0,document.body.scrollHeight);chScroll();
  L.forEach(m=>{if(m.hi&&!m.del&&!IMG.has(m.seq)&&!IML.has(m.seq))chImg(m.seq)})}
-async function chImg(s){IML.add(s);try{const r=await cl('chat_img',{uid:CU.id,tok:CU.tok,seq:s});if(r.ok){IMG.set(s,r.img);const el=document.querySelector('#cm .mi[data-s="'+s+'"]');if(el){const nb=chNear(),im=document.createElement('img');im.className='mi';im.dataset.s=s;im.src=r.img;im.alt='Foto';el.replaceWith(im);if(nb)window.scrollTo(0,document.body.scrollHeight)}}}catch(e){}IML.delete(s)}
-function chTap(e){const q=e.target.closest('.rq');if(q){chGo(+q.dataset.go);return}const im=e.target.closest('.mi:not(.ld)');if(im){chView(+im.dataset.s);return}const g=e.target.closest('.mg');if(g)chMenu(+g.dataset.s)}
+async function chImg(s){IML.add(s);try{const r=await cl('chat_img',{uid:CU.id,tok:CU.tok,seq:s});if(r.ok){IMG.set(s,r.img);if(ui.view==='chat'&&ui.cc)chDraw()}}catch(e){}IML.delete(s)}
+function chTap(e){if(e.target.closest('audio'))return;const q=e.target.closest('.rq');if(q){chGo(+q.dataset.go);return}const im=e.target.closest('.mi:not(.ld)');if(im){chView(+im.dataset.s);return}const g=e.target.closest('.mg');if(g)chMenu(+g.dataset.s)}
 function chGo(s){const el=document.querySelector('#cm .mg[data-s="'+s+'"] .bb');if(!el)return toast('Ese mensaje ya no está aquí');el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.remove('fl');void el.offsetWidth;el.classList.add('fl')}
 function chView(s){const d=IMG.get(s);if(!d)return;const o=document.createElement('div');o.id='civ';o.innerHTML=`<div class="top"><a href="${d}" download="foto-${s}.jpg" onclick="event.stopPropagation()" aria-label="Guardar">⬇</a><button class="x" aria-label="Cerrar">✕</button></div><img src="${d}" alt="Foto">`;o.onclick=()=>o.remove();document.body.appendChild(o)}
 function chMenu(s){const m=CH.msgs.find(x=>x.seq===s);if(!m||m.uid==='sys')return;const me=m.uid===CU.id;let o=$('#cmn');if(o)o.remove();o=document.createElement('div');o.id='cmn';
@@ -910,6 +911,7 @@ const EMO=['😀','😂','😍','🙏','👍','👏','🔥','🎉','😅','😎'
 function chBar(){const x=$('#cx');if(!x)return;let h='';
  if(ui.rp)h+=`<div class="cxr"><div class="t"><b>Respondiendo a ${esc(ui.rp.n)}</b><span>${esc(ui.rp.t)}</span></div><button onclick="ui.rp=null;chBar()" aria-label="Cancelar">✕</button></div>`;
  if(ui.pim)h+=`<div class="cxr"><img src="${ui.pim}" alt=""><div class="t"><b>Foto lista para enviar</b><span>Puedes escribir un comentario abajo</span></div><button onclick="ui.pim=null;chBar()" aria-label="Quitar">✕</button></div>`;
+ if(REC)h+=`<div class="cxr"><span class="rdot"></span><div class="t"><b id="rect">0:00</b><span>Grabando audio… (máximo 1 minuto)</span></div><button onclick="chRecEnd(1)" aria-label="Enviar audio">${I.send}</button><button onclick="chRecEnd(0)" aria-label="Cancelar">✕</button></div>`;
  if(ui.em)h+=`<div class="cem">${EMO.map(e=>`<button onclick="chEm('${e}')">${e}</button>`).join('')}</div>`;
  x.innerHTML=h?`<div class="cx">${h}</div>`:''}
 function chEmoji(){ui.em=!ui.em;chBar()}
@@ -919,12 +921,34 @@ async function chPick(f){if(!f)return;if(!/^image\//.test(f.type))return uiAlert
   let q=.72,d=cv.toDataURL('image/jpeg',q);while(d.length>420000&&q>.35){q-=.1;d=cv.toDataURL('image/jpeg',q)}
   if(d.length>440000)return uiAlert('La imagen es demasiado pesada.');ui.pim=d;chBar()}catch(e){uiAlert('No pude leer esa imagen.')}}
 function chOpen(c){ui.cc=c;ui.cg=0;ui.rp=null;ui.pim=null;ui.em=0;ui.cnew=0;render();setTimeout(()=>{const i=$('#cin');if(i&&innerWidth>700)i.focus()},80)}
-function chBack(){ui.cc=null;ui.rp=null;ui.pim=null;render()}
+function chBack(){if(REC)chRecEnd(0);ui.cc=null;ui.rp=null;ui.pim=null;render()}
 async function chSend(){const i=$('#cin');if(!i||!ui.cc)return;const txt=i.value.trim();if(!txt&&!ui.pim)return;
  const p={uid:CU.id,tok:CU.tok,cid:ui.cc,txt,rep:ui.rp?ui.rp.seq:0,img:ui.pim||undefined},old=[i.value,ui.rp,ui.pim];i.value='';i.style.height='auto';ui.rp=null;ui.pim=null;ui.em=0;chBar();
  let r;try{r=await cl('chat_send',p)}catch(e){i.value=old[0];ui.rp=old[1];ui.pim=old[2];chBar();return uiAlert('No hay conexión. Tu mensaje no se envió.')}
  if(!r.ok){i.value=old[0];ui.rp=old[1];ui.pim=old[2];chBar();return uiAlert(r.err==='limite'?'Estás enviando muy rápido. Espera un momento.':'No se pudo enviar el mensaje.')}
  await chPoll();window.scrollTo(0,document.body.scrollHeight);i.focus()}
+
+/* --- Sin parpadeo: solo se vuelve a dibujar lo que cambió --- */
+function sH(el,h){if(!el)return 0;if(el._h===h)return 0;el.innerHTML=h;el._h=h;return 1}
+function chSet(h){const el=$('#cm');if(!el||el._h===h)return;const a=[...el.querySelectorAll('audio')].find(x=>!x.paused),st=a&&a.closest('.mg')?{s:a.closest('.mg').dataset.s,t:a.currentTime}:null;
+ el.innerHTML=h;el._h=h;if(st){const n=el.querySelector('.mg[data-s="'+st.s+'"] audio');if(n){try{n.currentTime=st.t;n.play().catch(()=>{})}catch(e){}}}}
+/* --- Audios --- */
+I.mic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>';
+let REC=null;
+async function chRec(){if(REC||!ui.cc)return;if(!navigator.mediaDevices||!window.MediaRecorder)return uiAlert('Este navegador no permite grabar audio.');
+ let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){return uiAlert('Para grabar audios, permite el uso del micrófono en tu navegador.')}
+ const mt=['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg'].find(t=>{try{return MediaRecorder.isTypeSupported(t)}catch(e){return 0}})||'';let mr;
+ try{mr=new MediaRecorder(st,mt?{mimeType:mt,audioBitsPerSecond:24000}:{audioBitsPerSecond:24000})}catch(e){st.getTracks().forEach(t=>t.stop());return uiAlert('No pude iniciar la grabación.')}
+ const R={mr,st,ch:[],t0:Date.now(),send:0,cid:ui.cc,rp:ui.rp?ui.rp.seq:0};REC=R;
+ mr.ondataavailable=e=>{if(e.data&&e.data.size)R.ch.push(e.data)};
+ mr.onstop=async()=>{clearInterval(R.iv);R.st.getTracks().forEach(t=>t.stop());if(REC===R)REC=null;if(ui.cc)chBar();if(!R.send)return;
+  if(Date.now()-R.t0<1000){toast('Audio muy corto');return}
+  const blob=new Blob(R.ch,{type:R.mr.mimeType||mt||'audio/webm'}),d=await new Promise(ok=>{const f=new FileReader();f.onload=()=>ok(f.result);f.onerror=()=>ok(null);f.readAsDataURL(blob)});
+  if(!d)return uiAlert('No pude preparar el audio.');if(d.length>590000)return uiAlert('El audio es demasiado largo.');
+  let r;try{r=await cl('chat_send',{uid:CU.id,tok:CU.tok,cid:R.cid,txt:'',aud:d,rep:R.rp})}catch(e){return uiAlert('No hay conexión. El audio no se envió.')}
+  if(!r.ok)return uiAlert(r.err==='limite'?'Estás enviando muy rápido. Espera un momento.':'No se pudo enviar el audio.');ui.rp=null;chBar();await chPoll();window.scrollTo(0,document.body.scrollHeight)};
+ mr.start(1000);R.iv=setInterval(()=>{const s=Math.floor((Date.now()-R.t0)/1000),e=$('#rect');if(e)e.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s>=60)chRecEnd(1)},250);chBar()}
+function chRecEnd(send){if(!REC)return;REC.send=send;try{if(REC.mr.state!=='inactive')REC.mr.stop()}catch(e){}}
 function chGroupForm(){const us=U.filter(u=>u.st==='ok'&&u.id!==CU.id);
  $('#main').innerHTML=`<div class="chh"><div class="row"><div><h2>Nuevo grupo</h2><p>Elige el nombre y quién entra</p></div></div></div><div class="card"><label class="top" style="display:block">Nombre del grupo<input id="gn" type="text" maxlength="40" placeholder="Ej: Turno de la tarde" style="margin-top:4px"></label><p class="top" style="margin:12px 0 4px">Elige quiénes entran:</p>${us.map(u=>`<label class="pk"><input type="checkbox" value="${u.id}"><span class="av" style="width:36px;height:36px;background:${chCol(u.id)}">${phHtml(u)}</span><b style="color:var(--navy)">${esc(u.n)}</b></label>`).join('')||'<p class="top">Aún no hay más usuarios.</p>'}<div class="act" style="margin-top:14px"><button class="pri" onclick="chGroupMk()">Crear grupo</button><button onclick="ui.cg=0;chat()">Cancelar</button></div></div>`}
 async function chGroupMk(){const n=($('#gn').value||'').trim(),ids=[...document.querySelectorAll('.pk input:checked')].map(x=>x.value);
